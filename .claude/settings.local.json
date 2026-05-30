@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Start-Process \"C:\\\\Users\\\\User\\\\dashboard\\\\index.html\")",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "PowerShell(gh *)",
+      "Bash(git *)",
+      "Bash(dir C:\\\\Users\\\\User\\\\dashboard *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(git *)",
+      "Bash(gh api *)",
+      "PowerShell(cmdkey *)"
+    ]
+  }
+}
