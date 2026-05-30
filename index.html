@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>George's Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -335,6 +336,19 @@ canvas{display:block;width:100%;height:100%;}
 .trend-hdr{display:flex;align-items:center;padding:10px 0;cursor:pointer;}
 .trend-name{font-size:13px;font-weight:600;flex:1;}
 .trend-chart-wrap{height:110px;margin-bottom:10px;}
+
+/* ── USERNAME OVERLAY ── */
+#usernameOverlay{position:fixed;inset:0;background:var(--bg);z-index:10001;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+.un-icon{font-size:42px;margin-bottom:16px;}
+.un-title{font-size:22px;font-weight:800;letter-spacing:-0.3px;margin-bottom:8px;}
+.un-sub{font-size:13px;color:var(--t2);margin-bottom:32px;text-align:center;line-height:1.5;max-width:280px;}
+#usernameField{background:#1a1a1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;font-size:16px;color:var(--t1);width:100%;max-width:280px;text-align:center;margin-bottom:12px;font-family:inherit;}
+#usernameField:focus{border-color:rgba(79,142,247,0.5);outline:none;}
+.un-btn{background:var(--blue);border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:700;color:#fff;width:100%;max-width:280px;cursor:pointer;border:none;font-family:inherit;transition:opacity 0.15s;}
+.un-btn:hover{opacity:0.85;}
+.un-note{font-size:11px;color:var(--t3);margin-top:12px;text-align:center;line-height:1.4;max-width:280px;}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--t3);margin-right:5px;vertical-align:middle;}
+.sync-dot.online{background:var(--green);box-shadow:0 0 5px var(--green);}
 </style>
 </head>
 <body>
@@ -751,6 +765,17 @@ canvas{display:block;width:100%;height:100%;}
 
       <button class="save-small" onclick="saveProfile()">Save Profile</button>
 
+      <!-- SYNC -->
+      <div class="card" style="margin-top:14px;">
+        <div class="section-label">Cross-Device Sync</div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:12px;">
+          <span class="sync-dot" id="syncDot"></span>
+          Syncing as: <strong id="syncUsernameDisplay" style="color:var(--t1);">—</strong>
+        </div>
+        <button class="action-btn" onclick="syncNow()">↻ Sync Now</button>
+        <button class="action-btn" onclick="changeUsername()">Change Username</button>
+      </div>
+
       <!-- SECURITY -->
       <div class="card" style="margin-top:14px;">
         <div class="section-label">Security</div>
@@ -807,6 +832,18 @@ canvas{display:block;width:100%;height:100%;}
 
 <div class="toast" id="toast"></div>
 
+<!-- ── USERNAME OVERLAY ── -->
+<div id="usernameOverlay">
+  <div class="un-icon">👋</div>
+  <div class="un-title">Welcome!</div>
+  <div class="un-sub">Choose a username to sync your data across all your devices. Use the same name on every device to share your data.</div>
+  <input id="usernameField" type="text" placeholder="e.g. george" maxlength="30"
+    autocomplete="off" autocapitalize="off" spellcheck="false"
+    onkeydown="if(event.key==='Enter')submitUsername()">
+  <button class="un-btn" onclick="submitUsername()">Get Started →</button>
+  <div class="un-note">Same username on any device = shared data. Case-insensitive. No password needed.</div>
+</div>
+
 <script>
 // ════════════════════════════════════════════
 // CONSTANTS & DEFAULTS
@@ -831,6 +868,26 @@ const BW_EXERCISES = new Set(['Push-ups','Dips','Pull-ups','Chin-ups','Plank','C
 const KEY = 'wd3_v1';
 const FEED_KEY = 'wd3_feed_v1';
 const API_KEY_STORE = 'george_api_key';
+
+// ── SUPABASE CONFIG ──
+// Run this SQL in your Supabase project (SQL Editor) before first use:
+// CREATE TABLE settings      (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// CREATE TABLE goals          (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// CREATE TABLE water_logs     (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// CREATE TABLE workout_logs   (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// CREATE TABLE supplement_logs(user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// CREATE TABLE weight_logs    (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
+// ALTER TABLE settings       ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON settings       FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE goals           ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON goals           FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE water_logs      ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON water_logs      FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE workout_logs    ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON workout_logs    FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE supplement_logs ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON supplement_logs FOR ALL USING (true) WITH CHECK (true);
+// ALTER TABLE weight_logs     ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON weight_logs     FOR ALL USING (true) WITH CHECK (true);
+const SUPABASE_URL = 'https://oyylbiscxnymnmetyrho.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im95eWxiaXNjeG55bW5tZXR5cmhvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzQ1MDgsImV4cCI6MjA5NTcxMDUwOH0.3xxHcp3Z4vJWHEGFV_iUW_YeJ2gdUPqYiNAQkYnR-qU';
+const USERNAME_KEY = 'george_dashboard_username';
+let sb = null;
+let syncTimer = null;
 
 let feedCards = [];
 let reviewLoading = false;
@@ -882,7 +939,148 @@ function load() {
   if(!S.gym.sessions) S.gym.sessions = [];
 }
 
-function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
+function save() {
+  localStorage.setItem(KEY, JSON.stringify(S));
+  if (syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncToSupabase().catch(console.warn), 1000);
+}
+
+// ════════════════════════════════════════════
+// USERNAME & SUPABASE SYNC
+// ════════════════════════════════════════════
+
+function getUsername() { return localStorage.getItem(USERNAME_KEY); }
+
+function initSupabase() {
+  if (!window.supabase) return;
+  try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+  catch(e) { console.warn('Supabase init error:', e); }
+}
+
+function showUsernameOverlay() {
+  const el = document.getElementById('usernameOverlay');
+  if (el) el.style.display = 'flex';
+}
+
+function submitUsername() {
+  const input = document.getElementById('usernameField');
+  const raw = input ? input.value.trim() : '';
+  if (raw.length < 2) { toast('Enter at least 2 characters'); return; }
+  const name = raw.toLowerCase().replace(/\s+/g, '_');
+  localStorage.setItem(USERNAME_KEY, name);
+  const el = document.getElementById('usernameOverlay');
+  if (el) el.style.display = 'none';
+  initApp();
+}
+
+async function loadFromSupabase() {
+  const userId = getUsername();
+  if (!userId || !sb) return;
+  const tableMap = [
+    { table:'settings',       stateKey:'settings'  },
+    { table:'goals',          stateKey:'goals'     },
+    { table:'water_logs',     stateKey:'water'     },
+    { table:'workout_logs',   stateKey:'gym'       },
+    { table:'supplement_logs',stateKey:'stack'     },
+    { table:'weight_logs',    stateKey:'_weights'  },
+  ];
+  try {
+    const results = await Promise.all(tableMap.map(({ table }) =>
+      sb.from(table).select('data').eq('user_id', userId).maybeSingle()
+    ));
+    const hasData = results.some(r => r.data !== null);
+    if (!hasData) { await syncToSupabase(); return; }
+    const d = defaultState();
+    tableMap.forEach(({ stateKey }, i) => {
+      const row = results[i];
+      if (row.error || !row.data || !row.data.data) return;
+      const remote = row.data.data;
+      if (stateKey === '_weights') {
+        if (Array.isArray(remote.weights))   S.weights     = remote.weights;
+        if (remote.workoutDone)              S.workoutDone = remote.workoutDone;
+      } else {
+        S[stateKey] = { ...d[stateKey], ...remote };
+      }
+    });
+    if (!S.gym)           S.gym           = d.gym;
+    if (!S.gym.workouts)  S.gym.workouts  = [];
+    if (!S.gym.sessions)  S.gym.sessions  = [];
+    localStorage.setItem(KEY, JSON.stringify(S));
+    setSyncOnline(true);
+  } catch(e) {
+    console.warn('Supabase load error:', e);
+    setSyncOnline(false);
+  }
+}
+
+async function syncToSupabase() {
+  const userId = getUsername();
+  if (!userId || !sb) return;
+  const rows = [
+    { table:'settings',       data: S.settings },
+    { table:'goals',          data: S.goals    },
+    { table:'water_logs',     data: S.water    },
+    { table:'workout_logs',   data: S.gym      },
+    { table:'supplement_logs',data: S.stack    },
+    { table:'weight_logs',    data: { weights: S.weights, workoutDone: S.workoutDone } },
+  ];
+  try {
+    await Promise.all(rows.map(({ table, data }) =>
+      sb.from(table).upsert(
+        { user_id: userId, data, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id' }
+      )
+    ));
+    setSyncOnline(true);
+  } catch(e) {
+    console.warn('Supabase sync error:', e);
+    setSyncOnline(false);
+  }
+}
+
+function setSyncOnline(online) {
+  const dot = document.getElementById('syncDot');
+  if (dot) dot.classList.toggle('online', online);
+}
+
+function setupRealtimeSync() {
+  const userId = getUsername();
+  if (!userId || !sb) return;
+  const tables = ['settings','goals','water_logs','workout_logs','supplement_logs','weight_logs'];
+  tables.forEach(table => {
+    sb.channel(`${table}_${userId}`)
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table, filter:`user_id=eq.${userId}` },
+        async () => {
+          if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+          await loadFromSupabase();
+          renderCurrentTab();
+          renderTicker();
+        })
+      .subscribe();
+  });
+}
+
+function renderCurrentTab() {
+  if (currentTab === 'main')    { renderGoals(); renderRing(); }
+  if (currentTab === 'health')  { renderWater(); renderStack(); drawWeightChart(); updateComposition(); renderWeightHistory(); }
+  if (currentTab === 'gym')     { renderPastWorkouts(); renderExerciseTrends(); }
+  if (currentTab === 'feed')    { renderFeed(); }
+  if (currentTab === 'profile') { renderProfile(); }
+}
+
+function syncNow() {
+  const userId = getUsername();
+  if (!userId) { showUsernameOverlay(); return; }
+  toast('Syncing…');
+  syncToSupabase().then(() => toast('Synced ✓')).catch(e => toast('Sync error: ' + String(e.message).slice(0,40)));
+}
+
+function changeUsername() {
+  if (!confirm('Change username? This will disconnect this device from its current synced data.')) return;
+  if (sb) { const tables=['settings','goals','water_logs','workout_logs','supplement_logs','weight_logs']; tables.forEach(t=>sb.removeAllChannels()); }
+  localStorage.removeItem(USERNAME_KEY);
+  showUsernameOverlay();
+}
 
 // ════════════════════════════════════════════
 // TIME HELPERS
@@ -2107,6 +2305,8 @@ async function generateWeeklyReview() {
 
 function renderProfile() {
   const s = S.settings;
+  const syncEl = document.getElementById('syncUsernameDisplay');
+  if (syncEl) syncEl.textContent = getUsername() || 'Not set';
   document.getElementById('prof_name').value      = s.name || 'George Kourtis';
   document.getElementById('prof_age').value       = s.age  || 17;
   document.getElementById('prof_weight').value    = s.weight || 170;
@@ -2206,8 +2406,14 @@ function importDataPrompt() {
 function resetData() {
   if (!confirm('Reset ALL dashboard data? This cannot be undone.')) return;
   S = defaultState(); feedCards = [];
-  save(); saveFeed();
+  localStorage.setItem(KEY, JSON.stringify(S));
+  localStorage.setItem(FEED_KEY, JSON.stringify(feedCards));
   localStorage.removeItem(API_KEY_STORE);
+  const userId = getUsername();
+  if (userId && sb) {
+    const tables = ['settings','goals','water_logs','workout_logs','supplement_logs','weight_logs'];
+    Promise.all(tables.map(t => sb.from(t).delete().eq('user_id', userId))).catch(console.warn);
+  }
   renderProfile(); renderGoals(); renderTicker();
   toast('All data reset');
 }
@@ -2387,35 +2593,44 @@ function midnightCheck() {
 // INIT
 // ════════════════════════════════════════════
 
-function init() {
+function initApp() {
   load();
   loadFeed();
   midnightCheck();
   initPinLock();
 
-  // Recalculate bottle target from localStorage weight on every page load
   const initTarget = bottleTarget();
   document.getElementById('waterBig').innerHTML =
     `0<span style="font-size:20px;font-weight:400;color:var(--t2);">/${initTarget}</span>`;
   document.getElementById('waterSubText').textContent = `0 bottles · 0 ml`;
 
-  // Gym init
   renderGymRepGrid();
   renderPastWorkouts();
   renderExerciseTrends();
-
   renderRing();
   renderGoals();
   renderTicker();
   renderProfile();
 
-  // Tick ring every 30s
   setInterval(()=>{ renderRing(); midnightCheck(); renderTicker(); }, 30000);
 
-  // Redraw charts on resize
   window.addEventListener('resize',()=>{
     if(currentTab==='health') { drawWaterChart(); drawWeightChart(); }
   });
+
+  // Load from Supabase and set up realtime after local render
+  loadFromSupabase().then(() => {
+    renderCurrentTab();
+    renderTicker();
+    setupRealtimeSync();
+  }).catch(console.warn);
+}
+
+function init() {
+  initSupabase();
+  const username = getUsername();
+  if (!username) { showUsernameOverlay(); return; }
+  initApp();
 }
 
 init();
