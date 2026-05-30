@@ -289,6 +289,37 @@ canvas{display:block;width:100%;height:100%;}
 .pin-back:active{background:#1a1a1a!important;}
 @keyframes pinShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
 .pin-shake{animation:pinShake 0.38s ease;}
+
+/* ── WORKOUT LOGGER ── */
+.gym-set-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.gym-set-row:last-child{border-bottom:none;}
+.gym-set-num{font-size:11px;font-weight:700;color:var(--t3);min-width:44px;flex-shrink:0;}
+.gym-set-ex{flex:1;font-size:13px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gym-set-val{font-weight:700;color:var(--blue);font-size:13px;flex-shrink:0;}
+.gym-set-del{color:var(--t3);font-size:18px;padding:0 5px;transition:color 0.15s;flex-shrink:0;}
+.gym-set-del:hover{color:var(--red);}
+.pw-card{border-bottom:1px solid var(--border);padding:10px 0;}
+.pw-card:last-child{border-bottom:none;}
+.pw-hdr{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.pw-info{flex:1;}
+.pw-date{font-size:13px;font-weight:700;}
+.pw-sub{font-size:11px;color:var(--t3);margin-top:2px;}
+.pw-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.pw-del-btn{font-size:11px;color:var(--t3);padding:4px 8px;border-radius:6px;background:#1a1a1a;border:1px solid var(--border);transition:all 0.15s;}
+.pw-del-btn:hover{color:var(--red);border-color:rgba(239,68,68,0.3);}
+.pw-chevron{color:var(--t3);font-size:12px;transition:transform 0.2s;}
+.pw-set-row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.03);}
+.pw-set-row:last-child{border-bottom:none;}
+.pw-set-num{font-size:11px;color:var(--t3);min-width:38px;}
+.pw-edit-btn{font-size:10px;font-weight:600;color:var(--t3);padding:3px 7px;border-radius:4px;background:#1a1a1a;border:1px solid var(--border);transition:all 0.15s;}
+.pw-edit-btn:hover{color:var(--blue);border-color:rgba(79,142,247,0.3);}
+.pw-set-del{color:var(--t3);font-size:14px;padding:1px 5px;transition:color 0.15s;}
+.pw-set-del:hover{color:var(--red);}
+.trend-item{border-bottom:1px solid var(--border);padding:2px 0;}
+.trend-item:last-child{border-bottom:none;}
+.trend-hdr{display:flex;align-items:center;padding:10px 0;cursor:pointer;}
+.trend-name{font-size:13px;font-weight:600;flex:1;}
+.trend-chart-wrap{height:110px;margin-bottom:10px;}
 </style>
 </head>
 <body>
@@ -467,60 +498,69 @@ canvas{display:block;width:100%;height:100%;}
     <!-- ══ GYM TAB ══ -->
     <div class="page" id="page-gym">
 
-      <!-- PROGRESSIVE OVERLOAD COACH -->
+      <!-- WORKOUT LOGGER -->
       <div class="card">
-        <div class="section-label">Progressive Overload Coach</div>
+        <div class="section-label">Workout Logger</div>
 
-        <div class="day-tabs" id="dayTabs">
-          <div class="day-tab active" data-day="push" onclick="setDay('push')">Push</div>
-          <div class="day-tab" data-day="pull" onclick="setDay('pull')">Pull</div>
-          <div class="day-tab" data-day="legs" onclick="setDay('legs')">Legs</div>
+        <!-- Exercise search -->
+        <div style="position:relative;margin-bottom:12px;" id="gymExWrap">
+          <input type="text" class="field-input" id="gymExInput"
+            placeholder="Search or pick an exercise..." autocomplete="off"
+            style="width:100%;cursor:pointer;"
+            onclick="openGymExDrop()" oninput="filterGymEx(this.value)">
+          <div class="autocomplete-drop" id="gymExDrop"></div>
         </div>
 
-        <div id="exerciseWrap" style="position:relative;margin-bottom:12px;">
-          <input type="text" class="exercise-select" id="exerciseInput" placeholder="Search exercise..."
-            autocomplete="off" style="margin-bottom:0;cursor:pointer;"
-            onclick="openExerciseDrop()" oninput="filterExerciseDrop(this.value)">
-          <div class="autocomplete-drop" id="exerciseDrop"></div>
+        <!-- Weight -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div class="field-label" style="margin-bottom:0;">Weight (lbs)</div>
+          <button class="bw-toggle" id="gymBwBtn" onclick="toggleGymBW()">BW</button>
         </div>
-
-        <div class="section-label">Reps</div>
-        <div class="rep-grid" id="repGrid"></div>
-
-        <div id="weightSection">
-          <div class="section-label">Weight</div>
-          <div class="weight-row" id="weightRow">
-            <button class="weight-ctrl" onclick="adjustWeight(-1)">−</button>
-            <input class="weight-val" id="weightInput" type="number" value="60" min="0" max="500" step="2.5">
-            <button class="weight-ctrl" onclick="adjustWeight(1)">+</button>
-            <span style="color:var(--t2);font-size:13px;">kg</span>
+        <div id="gymWeightRow" style="margin-bottom:12px;">
+          <div class="weight-row">
+            <button class="weight-ctrl" onclick="gymAdjWeight(-5)">−</button>
+            <input class="weight-val" id="gymWeightInput" type="number" value="135" min="0" max="2000" step="5">
+            <button class="weight-ctrl" onclick="gymAdjWeight(5)">+</button>
+            <span style="color:var(--t2);font-size:13px;">lbs</span>
           </div>
         </div>
 
-        <button class="log-set-btn" onclick="logSet()">Log Set</button>
+        <!-- Reps -->
+        <div class="field-label" style="margin-bottom:6px;">Reps</div>
+        <div id="gymRepGrid" style="display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:8px;"></div>
+        <input class="field-input" id="gymCustomReps" type="number" placeholder="Custom reps..." min="1" max="999"
+          style="width:100%;margin-bottom:12px;" oninput="gymSetCustomRep(this.value)">
 
-        <div class="recommend-card" id="recommendCard">
-          <div class="recommend-title">Next Session</div>
-          <div class="recommend-text" id="recommendText">Log a set to get recommendations.</div>
-        </div>
+        <!-- Add Set -->
+        <button class="log-set-btn" onclick="addGymSet()">+ Add Set</button>
 
-        <div class="stats-row">
-          <div class="stat-box"><div class="stat-val" id="bestReps">—</div><div class="stat-lbl">Best Reps</div></div>
-          <div class="stat-box"><div class="stat-val" id="bestSet">—</div><div class="stat-lbl">Best Set</div></div>
-          <div class="stat-box"><div class="stat-val" id="sessions">0</div><div class="stat-lbl">Sessions</div></div>
-        </div>
+        <!-- Running session sets -->
+        <div id="gymCurrentSets"></div>
 
-        <div style="margin-top:14px;">
-          <div class="section-label">Trend — Last 10 Sets</div>
-          <div class="chart-wrap"><canvas id="gymChart"></canvas></div>
+        <!-- Finish workout -->
+        <div id="gymFinishWrap" style="display:none;">
+          <div class="divider" style="margin:14px 0 12px;"></div>
+          <button class="mark-done-btn" onclick="finishWorkout()">✓ Finish Workout</button>
         </div>
+      </div>
+
+      <!-- PAST WORKOUTS -->
+      <div class="card">
+        <div class="section-label">Past Workouts</div>
+        <div id="pastWorkoutsList"></div>
+      </div>
+
+      <!-- EXERCISE TRENDS -->
+      <div class="card">
+        <div class="section-label">Exercise Trends</div>
+        <div id="exerciseTrendsList"></div>
       </div>
 
       <!-- WEIGHT TRACKER -->
       <div class="card">
         <div class="section-label">Weight Tracker</div>
         <div class="weight-log-row">
-          <input class="weight-input-main" type="number" id="bodyWeightInput" placeholder="Today's weight (kg)" step="0.1" min="20" max="300">
+          <input class="weight-input-main" type="number" id="bodyWeightInput" placeholder="Today's weight (lbs)" step="0.5" min="44" max="660">
           <button class="add-btn" onclick="logBodyWeight()">Log</button>
         </div>
 
@@ -538,7 +578,7 @@ canvas{display:block;width:100%;height:100%;}
             <span class="comp-muscle-lbl" id="compMuscleLbl">Muscle gain: —</span>
             <span class="comp-fat-lbl" id="compFatLbl">Fat change: —</span>
           </div>
-          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Estimate based on weight trend vs gym volume delta.</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Estimate based on weight trend vs training volume delta.</div>
         </div>
 
         <!-- Progress Photos -->
@@ -556,21 +596,6 @@ canvas{display:block;width:100%;height:100%;}
               <input class="photo-input" type="file" id="photo2In" accept="image/*" onchange="loadPhoto(2,this)">
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- TODAY'S WORKOUT SUMMARY -->
-      <div class="card">
-        <div class="section-label">Today's Workout</div>
-        <div class="workout-nums">
-          <div class="wn-box"><div class="wn-val" id="sumSets">0</div><div class="wn-lbl">Sets</div></div>
-          <div class="wn-box"><div class="wn-val" id="sumKg">0</div><div class="wn-lbl">kg Lifted</div></div>
-          <div class="wn-box"><div class="wn-val" id="sumVol">0</div><div class="wn-lbl">Volume</div></div>
-        </div>
-        <button class="mark-done-btn" id="markDoneBtn" onclick="markWorkoutDone()">Mark Workout Done</button>
-        <div style="margin-top:14px;">
-          <button class="expand-btn" onclick="togglePastWorkouts()">▸ Past Workouts</button>
-          <div class="expandable" id="pastWorkoutsPanel" style="margin-top:10px;" ></div>
         </div>
       </div>
 
@@ -613,8 +638,8 @@ canvas{display:block;width:100%;height:100%;}
             <input class="field-input" type="number" id="prof_age" min="10" max="100">
           </div>
           <div>
-            <div class="field-label">Weight (kg)</div>
-            <input class="field-input" type="number" id="prof_weight" min="20" max="300" step="0.1">
+            <div class="field-label">Weight (lbs)</div>
+            <input class="field-input" type="number" id="prof_weight" min="44" max="660" step="1">
           </div>
           <div>
             <div class="field-label">Height (cm)</div>
@@ -772,38 +797,15 @@ const SUPP_SUGGESTIONS = [
   'Collagen Peptides','CoQ10','Melatonin','5-HTP','GABA'
 ];
 
-const EXERCISES = {
-  push: [
-    {name:'Push-ups',bw:true,inc:0},
-    {name:'Bench Press',bw:false,inc:5},
-    {name:'Incline Bench Press',bw:false,inc:5},
-    {name:'Overhead Press',bw:false,inc:5},
-    {name:'Dips',bw:true,inc:0},
-    {name:'Lateral Raises',bw:false,inc:2.5},
-    {name:'Tricep Pushdown',bw:false,inc:2.5},
-    {name:'Tricep Overhead Extension',bw:false,inc:2.5}
-  ],
-  pull: [
-    {name:'Pull-ups',bw:true,inc:0},
-    {name:'Chin-ups',bw:true,inc:0},
-    {name:'Barbell Row',bw:false,inc:5},
-    {name:'Dumbbell Row',bw:false,inc:2.5},
-    {name:'Lat Pulldown',bw:false,inc:2.5},
-    {name:'Face Pulls',bw:false,inc:2.5},
-    {name:'Bicep Curl',bw:false,inc:2.5},
-    {name:'Hammer Curl',bw:false,inc:2.5}
-  ],
-  legs: [
-    {name:'Squat',bw:false,inc:5},
-    {name:'Romanian Deadlift',bw:false,inc:5},
-    {name:'Leg Press',bw:false,inc:5},
-    {name:'Bulgarian Split Squat',bw:false,inc:5},
-    {name:'Leg Curl',bw:false,inc:2.5},
-    {name:'Leg Extension',bw:false,inc:2.5},
-    {name:'Calf Raises',bw:false,inc:2.5},
-    {name:'Deadlift',bw:false,inc:5}
-  ]
+const GYM_EXERCISES = {
+  'CHEST':     ['Bench Press','Incline Bench Press','Decline Bench Press','Dumbbell Fly','Cable Fly','Push-ups','Dips'],
+  'BACK':      ['Pull-ups','Chin-ups','Barbell Row','Dumbbell Row','Seated Cable Row','Lat Pulldown','Face Pulls','Deadlift'],
+  'SHOULDERS': ['Overhead Press','Lateral Raises','Front Raises','Reverse Fly','Arnold Press'],
+  'ARMS':      ['Bicep Curl','Hammer Curl','Preacher Curl','Tricep Pushdown','Skull Crushers','Tricep Overhead Extension'],
+  'LEGS':      ['Squat','Romanian Deadlift','Leg Press','Bulgarian Split Squat','Leg Curl','Leg Extension','Calf Raises','Hip Thrust','Walking Lunges'],
+  'CORE':      ['Plank','Crunches','Leg Raises','Cable Crunch']
 };
+const BW_EXERCISES = new Set(['Push-ups','Dips','Pull-ups','Chin-ups','Plank','Crunches','Leg Raises','Walking Lunges']);
 
 const KEY = 'wd3_v1';
 const FEED_KEY = 'wd3_feed_v1';
@@ -830,7 +832,7 @@ const ACTIVITY_LEVELS = [
 
 function defaultState() {
   return {
-    settings: { name:'George Kourtis', age:17, weight:77, height:178, sex:'male',
+    settings: { name:'George Kourtis', age:17, weight:170, height:178, sex:'male',
       activityLevel:'moderate', activityHours:6, trainingDaysPerWeek:4,
       bottleSize:500, glassSize:250, caffeineMg:0, stimulants:'',
       gymType:'commercial', compoundInc:5, isolationInc:2.5,
@@ -838,7 +840,7 @@ function defaultState() {
     goals: { today:[], tomorrow:[], streak:0, lastDoneDate:'' },
     water: { days:{} },
     stack: { supplements:[], days:{} },
-    gym: { type:'commercial', day:'push', exercise:'', repSel:8, weight:60, isBodyweight:false, sessions:[] },
+    gym: { sessions:[], workouts:[] },
     weights: [],
     workoutDone: {}
   };
@@ -854,6 +856,9 @@ function load() {
   for(const k in d) if(S[k] === undefined) S[k] = d[k];
   if(!S.settings) S.settings = d.settings;
   for(const k in d.settings) if(S.settings[k] === undefined) S.settings[k] = d.settings[k];
+  if(!S.gym) S.gym = d.gym;
+  if(!S.gym.workouts) S.gym.workouts = [];
+  if(!S.gym.sessions) S.gym.sessions = [];
 }
 
 function save() { localStorage.setItem(KEY, JSON.stringify(S)); }
@@ -883,22 +888,19 @@ function timeStr() {
 // ════════════════════════════════════════════
 
 function calcWaterGoal() {
-  const {weight, age, sex, activityHours, caffeineMg} = S.settings;
-  // Base: weight_kg × 35ml
-  let base = weight * 35;
-  // Sex adjustment
+  const {weight, sex, activityHours, caffeineMg} = S.settings;
+  // Base: weight_lbs × 0.5oz × 29.5735ml per oz
+  let base = (weight || 170) * 14.787;
   if(sex === 'female') base *= 0.85;
-  // Activity: +300ml per 3hrs/week
   base += (activityHours / 3) * 300;
-  // Caffeine: add 1.5× caffeine ml as water replacement
   base += caffeineMg * 1.5;
   return Math.round(base / 50) * 50;
 }
 
 function bottleTarget() {
-  const weightKG = S.settings.weight || 77;
+  const weightLBS = S.settings.weight || 170;
   const bottleSizeML = S.settings.bottleSize || 500;
-  return Math.max(1, Math.round((weightKG * 35) / bottleSizeML));
+  return Math.max(1, Math.round((weightLBS * 14.787) / bottleSizeML));
 }
 
 function waterTodayMl() {
@@ -1135,8 +1137,8 @@ function renderWhyPanel() {
   const goal = calcWaterGoal();
   document.getElementById('whyPanel').innerHTML =
     `Your target of <strong style="color:var(--t1)">${goal}ml</strong> is calculated from:<br>
-    • Base: ${s.weight}kg × 35ml = ${s.weight*35}ml<br>
-    • ${s.sex === 'female'?'Female adjustment: ×0.85<br>':''}
+    • Base: ${s.weight}lbs × 0.5oz × 29.6ml = ${Math.round(s.weight*14.787)}ml<br>
+    ${s.sex === 'female'?'• Female adjustment: ×0.85<br>':''}
     • Activity: ${s.activityHours}hrs/wk adds ${Math.round(s.activityHours/3*300)}ml<br>
     ${s.caffeineMg>0?`• Caffeine ${s.caffeineMg}mg adds ${Math.round(s.caffeineMg*1.5)}ml<br>`:''}
     • Rounded to nearest 50ml`;
@@ -1368,178 +1370,304 @@ function renderStack() {
 }
 
 // ════════════════════════════════════════════
-// GYM — PROGRESSIVE OVERLOAD
+// GYM — WORKOUT LOGGER
 // ════════════════════════════════════════════
 
-function setDay(day) {
-  S.gym.day = day;
-  document.querySelectorAll('.day-tab').forEach(el=>{
-    el.classList.toggle('active', el.dataset.day===day);
-  });
-  save(); renderExercises(); renderRecommend(); renderGymStats(); drawGymChart();
-}
+let gymCurrentSets = [];
+let gymIsBodyweight = false;
+let gymRepSel = 10;
 
-function getCurrentExercise() {
-  const list = EXERCISES[S.gym.day] || [];
-  return list.find(e => e.name === S.gym.exercise) || list[0];
-}
+function openGymExDrop() { filterGymEx(document.getElementById('gymExInput').value); }
 
-function renderExercises() {
-  const list = EXERCISES[S.gym.day] || [];
-  if (!S.gym.exercise || !list.find(e => e.name === S.gym.exercise)) {
-    S.gym.exercise = list[0] ? list[0].name : '';
+function filterGymEx(query) {
+  const q = (query || '').toLowerCase().trim();
+  const drop = document.getElementById('gymExDrop');
+  let html = '';
+  for (const [cat, exs] of Object.entries(GYM_EXERCISES)) {
+    const matches = q ? exs.filter(e => e.toLowerCase().includes(q)) : exs;
+    if (!matches.length) continue;
+    html += `<div style="padding:6px 14px 3px;font-size:9px;font-weight:800;letter-spacing:1px;color:var(--t3);text-transform:uppercase;background:#111;pointer-events:none;">${cat}</div>`;
+    html += matches.map(e => `<div class="autocomplete-item" onclick="selectGymEx(${JSON.stringify(e)})">${escHtml(e)}${BW_EXERCISES.has(e)?'<span style="font-size:10px;color:var(--purple);font-weight:700;margin-left:6px;">BW</span>':''}</div>`).join('');
   }
-  document.getElementById('exerciseInput').value = S.gym.exercise;
-  onExerciseChange();
-}
-
-function openExerciseDrop() {
-  filterExerciseDrop(document.getElementById('exerciseInput').value);
-}
-
-function filterExerciseDrop(query) {
-  const list = EXERCISES[S.gym.day] || [];
-  const q = (query || '').toLowerCase();
-  const matches = q ? list.filter(e => e.name.toLowerCase().includes(q)) : list;
-  const drop = document.getElementById('exerciseDrop');
-  if (!matches.length) { drop.style.display = 'none'; return; }
-  drop.innerHTML = matches.map(e =>
-    `<div class="autocomplete-item" onclick="selectExercise('${e.name}')">${e.name}${e.bw ? ' <span style="font-size:10px;color:var(--purple);font-weight:700;margin-left:4px;">BW</span>' : ''}</div>`
-  ).join('');
+  if (!html) html = '<div style="padding:10px 14px;font-size:13px;color:var(--t3);">No matches</div>';
+  drop.innerHTML = html;
   drop.style.display = 'block';
 }
 
-function selectExercise(name) {
-  S.gym.exercise = name;
-  document.getElementById('exerciseInput').value = name;
-  document.getElementById('exerciseDrop').style.display = 'none';
-  onExerciseChange();
+function selectGymEx(name) {
+  document.getElementById('gymExInput').value = name;
+  document.getElementById('gymExDrop').style.display = 'none';
+  const isBW = BW_EXERCISES.has(name);
+  if (isBW !== gymIsBodyweight) { gymIsBodyweight = isBW; updateGymBWState(); }
 }
 
-function onExerciseChange() {
-  S.gym.exercise = document.getElementById('exerciseInput').value;
-  const ex = getCurrentExercise();
-  const isBW = ex ? ex.bw : false;
-  document.getElementById('weightSection').style.display = isBW ? 'none' : 'block';
-  save();
-  renderRecommend();
-  renderGymStats();
-  drawGymChart();
+function gymAdjWeight(delta) {
+  const inp = document.getElementById('gymWeightInput');
+  inp.value = Math.max(0, (parseFloat(inp.value) || 0) + delta);
 }
 
-function renderRepGrid() {
-  const grid = document.getElementById('repGrid');
-  grid.innerHTML = Array.from({length:10},(_,i)=>i+5).map(r=>`
-    <div class="rep-btn ${r===S.gym.repSel?'active':''}" onclick="selectRep(${r})">${r}</div>`).join('');
+function toggleGymBW() { gymIsBodyweight = !gymIsBodyweight; updateGymBWState(); }
+
+function updateGymBWState() {
+  document.getElementById('gymWeightRow').style.display = gymIsBodyweight ? 'none' : 'block';
+  document.getElementById('gymBwBtn').classList.toggle('on', gymIsBodyweight);
 }
 
-function selectRep(r) {
-  S.gym.repSel = r;
-  renderRepGrid();
+function renderGymRepGrid() {
+  const grid = document.getElementById('gymRepGrid');
+  if (!grid) return;
+  grid.innerHTML = Array.from({length:20}, (_, i) => i + 1).map(r =>
+    `<div class="rep-btn ${r === gymRepSel ? 'active' : ''}" style="font-size:12px;padding:8px 2px;" onclick="gymSelectRep(${r})">${r}</div>`
+  ).join('');
 }
 
-function adjustWeight(sign) {
-  const ex = getCurrentExercise();
-  if (!ex || ex.bw) return;
-  const isCompound = ex.inc >= 5;
-  const inc = isCompound ? (S.settings.compoundInc || 5) : (S.settings.isolationInc || 2.5);
-  const inp = document.getElementById('weightInput');
-  const val = parseFloat(inp.value) || 0;
-  inp.value = Math.max(0, Math.round((val + sign * inc) * 10) / 10);
-  S.gym.weight = parseFloat(inp.value);
+function gymSelectRep(r) {
+  gymRepSel = r;
+  const custom = document.getElementById('gymCustomReps');
+  if (custom) custom.value = '';
+  renderGymRepGrid();
 }
 
-function logSet() {
-  const reps = S.gym.repSel;
-  const ex = getCurrentExercise();
-  const isBW = ex ? ex.bw : false;
-  const weight = isBW ? 0 : (parseFloat(document.getElementById('weightInput').value)||0);
-  const session = {
-    ts: Date.now(), date: todayKey(),
-    day: S.gym.day, exercise: S.gym.exercise,
-    reps, weight, bodyweight: isBW
-  };
-  S.gym.sessions.push(session);
-  save();
-  renderRecommend(); renderGymStats(); drawGymChart(); renderWorkoutSummary();
-  renderTicker();
-  toast(`Logged: ${reps} reps @ ${isBW?'BW':weight+'kg'}`);
+function gymSetCustomRep(val) {
+  const n = parseInt(val);
+  if (n > 0) { gymRepSel = n; renderGymRepGrid(); }
 }
 
-function renderRecommend() {
-  const sets = S.gym.sessions.filter(s=>s.exercise===S.gym.exercise);
-  const card = document.getElementById('recommendCard');
-  const txt = document.getElementById('recommendText');
-  if(!sets.length) { txt.textContent = 'Log a set to get recommendations.'; return; }
-  const last = sets[sets.length-1];
-  let msg;
-  if(last.reps >= 14) {
-    msg = `You hit ${last.reps} reps — increase weight by 2.5kg next session!`;
-  } else if(last.reps >= 12) {
-    msg = `${last.reps} reps last time — push for ${last.reps+1} next session, then increase weight.`;
-  } else {
-    msg = `Hit ${last.reps} reps — aim for ${Math.min(14,last.reps+1)} next session.`;
-  }
-  txt.textContent = msg;
+function getGymReps() {
+  const custom = parseInt((document.getElementById('gymCustomReps') || {}).value);
+  return custom > 0 ? custom : gymRepSel;
 }
 
-function renderGymStats() {
-  const sets = S.gym.sessions.filter(s=>s.exercise===S.gym.exercise);
-  if(!sets.length) {
-    document.getElementById('bestReps').textContent='—';
-    document.getElementById('bestSet').textContent='—';
-    document.getElementById('sessions').textContent='0';
-    return;
-  }
-  const bestReps = Math.max(...sets.map(s=>s.reps));
-  const bestVol = Math.max(...sets.map(s=>s.reps*(s.weight||S.settings.weight)));
-  const days = [...new Set(sets.map(s=>s.date))].length;
-  document.getElementById('bestReps').textContent = bestReps;
-  document.getElementById('bestSet').textContent = bestVol+'kg';
-  document.getElementById('sessions').textContent = days;
+function addGymSet() {
+  const exercise = (document.getElementById('gymExInput').value || '').trim();
+  if (!exercise) { toast('Select an exercise first'); return; }
+  const reps = getGymReps();
+  if (!reps || reps < 1) { toast('Select rep count'); return; }
+  const weight = gymIsBodyweight ? 0 : (parseFloat(document.getElementById('gymWeightInput').value) || 0);
+  gymCurrentSets.push({ exercise, weight, reps, isBodyweight: gymIsBodyweight });
+  renderCurrentSets();
+  toast(`Set ${gymCurrentSets.length} — ${exercise} ${gymIsBodyweight ? 'BW' : weight + ' lbs'} × ${reps}`);
 }
 
-function drawGymChart() {
-  const canvas = document.getElementById('gymChart');
-  const wrap = canvas.parentElement;
-  const dpr = window.devicePixelRatio||1;
-  const W = wrap.clientWidth, H = 130;
-  canvas.width=W*dpr; canvas.height=H*dpr;
-  canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  const ctx = canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
+function deleteCurrentSet(idx) {
+  gymCurrentSets.splice(idx, 1);
+  renderCurrentSets();
+}
 
-  const sets = S.gym.sessions.filter(s=>s.exercise===S.gym.exercise).slice(-10);
-  if(!sets.length) {
-    ctx.fillStyle='#333';ctx.font='12px system-ui';ctx.textAlign='center';
-    ctx.fillText('No sets logged for this exercise', W/2, H/2);
-    return;
-  }
-
-  const vals = sets.map(s=>s.reps*(s.weight||S.settings.weight));
-  const max = Math.max(...vals)*1.2||1;
-  const pad={t:10,r:10,b:28,l:10};
-  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
-
-  // Line
-  ctx.strokeStyle='rgba(79,142,247,0.3)';ctx.lineWidth=1.5;
-  ctx.beginPath();
-  vals.forEach((v,i)=>{
-    const x=pad.l+(i/(sets.length-1||1))*cW;
-    const y=pad.t+cH-(v/max)*cH;
-    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+function renderCurrentSets() {
+  const el = document.getElementById('gymCurrentSets');
+  const wrap = document.getElementById('gymFinishWrap');
+  if (!el) return;
+  if (!gymCurrentSets.length) { el.innerHTML = ''; if (wrap) wrap.style.display = 'none'; return; }
+  let html = '<div style="margin-top:12px;">';
+  gymCurrentSets.forEach((s, i) => {
+    html += `<div class="gym-set-row">
+      <span class="gym-set-num">Set ${i+1}</span>
+      <span class="gym-set-ex">${escHtml(s.exercise)}</span>
+      <span class="gym-set-val">${s.isBodyweight ? 'BW' : s.weight + ' lbs'} × ${s.reps}</span>
+      <button class="gym-set-del" onclick="deleteCurrentSet(${i})">×</button>
+    </div>`;
   });
+  html += '</div>';
+  el.innerHTML = html;
+  if (wrap) wrap.style.display = 'block';
+}
+
+function finishWorkout() {
+  if (!gymCurrentSets.length) { toast('Add some sets first'); return; }
+  S.gym.workouts.unshift({ id: Date.now(), date: todayKey(), ts: Date.now(), sets: [...gymCurrentSets] });
+  gymCurrentSets = [];
+  save();
+  renderCurrentSets();
+  renderPastWorkouts();
+  renderExerciseTrends();
+  if (!hasFeedCardToday('gym')) pushWorkoutCard();
+  toast('Workout saved!');
+}
+
+// ── Past Workouts ──
+
+function renderPastWorkouts() {
+  const workouts = S.gym.workouts || [];
+  const el = document.getElementById('pastWorkoutsList');
+  if (!el) return;
+  if (!workouts.length) { el.innerHTML = '<div class="empty-state">Finish a workout to see it here</div>'; return; }
+  el.innerHTML = workouts.map(w => {
+    const exs = [...new Set(w.sets.map(s => s.exercise))];
+    const dateStr = new Date(w.date + 'T12:00:00').toLocaleDateString('en', {weekday:'short',month:'short',day:'numeric'});
+    return `<div class="pw-card">
+      <div class="pw-hdr" onclick="togglePWDetail(${w.id})">
+        <div class="pw-info">
+          <div class="pw-date">${dateStr}</div>
+          <div class="pw-sub">${exs.slice(0,3).map(e=>escHtml(e)).join(', ')}${exs.length>3?'…':''} · ${w.sets.length} set${w.sets.length!==1?'s':''}</div>
+        </div>
+        <div class="pw-actions">
+          <button class="pw-del-btn" onclick="event.stopPropagation();deleteWorkout(${w.id})">Delete</button>
+          <span class="pw-chevron" id="pwc-${w.id}">▸</span>
+        </div>
+      </div>
+      <div class="pw-detail" id="pwd-${w.id}" style="display:none;"></div>
+    </div>`;
+  }).join('');
+}
+
+function togglePWDetail(id) {
+  const detail = document.getElementById(`pwd-${id}`);
+  const chevron = document.getElementById(`pwc-${id}`);
+  if (!detail) return;
+  const open = detail.style.display !== 'none';
+  detail.style.display = open ? 'none' : 'block';
+  chevron.style.transform = open ? '' : 'rotate(90deg)';
+  if (!open) renderPWDetail(id);
+}
+
+function renderPWDetail(id) {
+  const workout = (S.gym.workouts || []).find(w => w.id === id);
+  if (!workout) return;
+  const detail = document.getElementById(`pwd-${id}`);
+  const groups = {}; const order = [];
+  workout.sets.forEach((s, i) => {
+    if (!groups[s.exercise]) { groups[s.exercise] = []; order.push(s.exercise); }
+    groups[s.exercise].push({ ...s, idx: i });
+  });
+  let html = '<div style="padding-top:10px;">';
+  order.forEach(ex => {
+    html += `<div style="margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;color:var(--blue);margin-bottom:4px;">${escHtml(ex)}</div>`;
+    groups[ex].forEach((s, si) => {
+      html += `<div class="pw-set-row">
+        <span class="pw-set-num">Set ${si+1}</span>
+        <span style="flex:1;font-size:12px;font-weight:600;color:var(--t2);">${s.isBodyweight ? 'Bodyweight' : s.weight + ' lbs'} × ${s.reps} reps</span>
+        <button class="pw-edit-btn" onclick="editPWSet(${id},${s.idx})">Edit</button>
+        <button class="pw-set-del" onclick="deletePWSet(${id},${s.idx})">×</button>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  detail.innerHTML = html;
+}
+
+function deleteWorkout(id) {
+  if (!confirm('Delete this workout?')) return;
+  S.gym.workouts = S.gym.workouts.filter(w => w.id !== id);
+  save(); renderPastWorkouts(); renderExerciseTrends();
+}
+
+function deletePWSet(workoutId, setIdx) {
+  const w = S.gym.workouts.find(x => x.id === workoutId);
+  if (!w) return;
+  w.sets.splice(setIdx, 1);
+  if (!w.sets.length) {
+    if (!confirm('Last set removed — delete this workout?')) { renderPWDetail(workoutId); return; }
+    S.gym.workouts = S.gym.workouts.filter(x => x.id !== workoutId);
+    save(); renderPastWorkouts(); renderExerciseTrends(); return;
+  }
+  save(); renderPWDetail(workoutId); renderExerciseTrends();
+}
+
+function editPWSet(workoutId, setIdx) {
+  const w = S.gym.workouts.find(x => x.id === workoutId);
+  if (!w) return;
+  const s = w.sets[setIdx]; if (!s) return;
+  if (!s.isBodyweight) {
+    const nw = prompt(`Weight (lbs) — current: ${s.weight}`, s.weight);
+    if (nw === null) return;
+    const wv = parseFloat(nw); if (!isNaN(wv) && wv >= 0) s.weight = wv;
+  }
+  const nr = prompt(`Reps — current: ${s.reps}`, s.reps);
+  if (nr === null) return;
+  const rv = parseInt(nr); if (!isNaN(rv) && rv > 0) s.reps = rv;
+  save(); renderPWDetail(workoutId); renderExerciseTrends();
+}
+
+// ── Exercise Trends ──
+
+function renderExerciseTrends() {
+  const workouts = S.gym.workouts || [];
+  const el = document.getElementById('exerciseTrendsList');
+  if (!el) return;
+  const byEx = {};
+  workouts.forEach(w => {
+    w.sets.forEach(s => {
+      if (!byEx[s.exercise]) byEx[s.exercise] = {};
+      if (!byEx[s.exercise][w.date]) byEx[s.exercise][w.date] = [];
+      byEx[s.exercise][w.date].push(s);
+    });
+  });
+  const eligible = Object.entries(byEx).filter(([_, bd]) => Object.keys(bd).length >= 2);
+  window._trendData = byEx;
+  if (!eligible.length) {
+    el.innerHTML = '<div class="empty-state" style="font-size:12px;">Log an exercise across 2+ sessions to see trends</div>';
+    return;
+  }
+  el.innerHTML = eligible.map(([ex]) => {
+    const safe = ex.replace(/[^a-zA-Z0-9]/g, '_');
+    const cnt = Object.keys(byEx[ex]).length;
+    return `<div class="trend-item">
+      <div class="trend-hdr" onclick="toggleTrend('${safe}')">
+        <span class="trend-name">${escHtml(ex)}</span>
+        <span style="font-size:11px;color:var(--t3);margin:0 8px;">${cnt} sessions</span>
+        <span class="expand-btn" id="trendBtn-${safe}">▸ Show trend</span>
+      </div>
+      <div class="expandable trend-chart-wrap" id="trend-${safe}">
+        <canvas id="trendCanvas-${safe}"></canvas>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleTrend(safe) {
+  const panel = document.getElementById(`trend-${safe}`);
+  const btn = document.getElementById(`trendBtn-${safe}`);
+  if (!panel) return;
+  const open = panel.classList.contains('open');
+  panel.classList.toggle('open', !open);
+  btn.textContent = open ? '▸ Show trend' : '▾ Hide trend';
+  if (!open) {
+    const ex = Object.keys(window._trendData || {}).find(e => e.replace(/[^a-zA-Z0-9]/g,'_') === safe);
+    if (ex) setTimeout(() => drawTrendChart(ex, `trendCanvas-${safe}`), 10);
+  }
+}
+
+function drawTrendChart(exercise, canvasId) {
+  const canvas = document.getElementById(canvasId); if (!canvas) return;
+  const wrap = canvas.parentElement;
+  const dpr = window.devicePixelRatio || 1;
+  const W = wrap.clientWidth || 300, H = 100;
+  canvas.width = W*dpr; canvas.height = H*dpr;
+  canvas.style.width = W+'px'; canvas.style.height = H+'px';
+  const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
+  const byDate = (window._trendData || {})[exercise] || {};
+  const dates = Object.keys(byDate).sort();
+  const points = dates.map(d => {
+    const sets = byDate[d];
+    const isBW = sets.every(s => s.isBodyweight);
+    return { val: isBW ? Math.max(...sets.map(s=>s.reps)) : Math.max(...sets.map(s=>s.weight||0)), isBW, date: d };
+  });
+  const vals = points.map(p=>p.val);
+  const maxV = Math.max(...vals)*1.2||1, minV = Math.min(...vals)*0.85;
+  const range = maxV-minV||1;
+  const pad={t:14,r:10,b:24,l:8}, cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const xOf = i => pad.l + (points.length>1?(i/(points.length-1))*cW:cW/2);
+  const yOf = v => pad.t+cH-((v-minV)/range)*cH;
+  ctx.beginPath();
+  points.forEach((p,i)=>{ const x=xOf(i),y=yOf(p.val); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(points.length-1),pad.t+cH); ctx.lineTo(pad.l,pad.t+cH); ctx.closePath();
+  ctx.fillStyle='rgba(79,142,247,0.07)'; ctx.fill();
+  ctx.strokeStyle='#4f8ef7'; ctx.lineWidth=2; ctx.beginPath();
+  points.forEach((p,i)=>{ const x=xOf(i),y=yOf(p.val); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.stroke();
-
-  // Points + labels
-  vals.forEach((v,i)=>{
-    const x=pad.l+(i/(sets.length-1||1))*cW;
-    const y=pad.t+cH-(v/max)*cH;
-    ctx.fillStyle='#4f8ef7';
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
-
-    ctx.fillStyle='#888';ctx.font='9px system-ui';ctx.textAlign='center';
-    ctx.fillText(`${sets[i].reps}r`, x, H-6);
+  points.forEach((p,i)=>{
+    const x=xOf(i),y=yOf(p.val);
+    ctx.fillStyle='#4f8ef7'; ctx.beginPath(); ctx.arc(x,y,3.5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#aaa'; ctx.font='bold 9px system-ui'; ctx.textAlign='center';
+    ctx.fillText(p.val+(p.isBW?'r':''), x, y-6);
+    if (i===0||i===points.length-1||points.length<=5) {
+      const d=new Date(p.date+'T12:00:00');
+      ctx.fillStyle='#444'; ctx.font='9px system-ui';
+      ctx.fillText(d.toLocaleDateString('en',{month:'short',day:'numeric'}), x, H-6);
+    }
   });
 }
 
@@ -1549,7 +1677,7 @@ function drawGymChart() {
 
 function logBodyWeight() {
   const v = parseFloat(document.getElementById('bodyWeightInput').value);
-  if(!v||v<20||v>300) { toast('Enter a valid weight (20–300 kg)'); return; }
+  if(!v||v<44||v>660) { toast('Enter a valid weight (44–660 lbs)'); return; }
   S.weights.push({ date:todayKey(), ts:Date.now(), kg:v });
   // Sync water goal weight immediately
   S.settings.weight = v;
@@ -1561,7 +1689,7 @@ function logBodyWeight() {
     renderWater();
   }
   const newGoal = calcWaterGoal();
-  toast(`Logged ${v} kg · Water target → ${newGoal.toLocaleString()}ml`);
+  toast(`Logged ${v} lbs · Water target → ${newGoal.toLocaleString()}ml`);
 }
 
 function drawWeightChart() {
@@ -1646,33 +1774,26 @@ function updateComposition() {
   const oldAvg = old.reduce((a,b)=>a+b,0)/old.length;
   const weightDelta = recentAvg - oldAvg;
 
-  // Gym volume delta
-  const recentSessions = S.gym.sessions.filter(s=>{
-    const d = new Date(s.ts);
-    return (Date.now()-d.getTime()) < 14*86400000;
-  });
-  const oldSessions = S.gym.sessions.filter(s=>{
-    const d = new Date(s.ts);
-    const age = (Date.now()-d.getTime())/86400000;
-    return age>=14 && age<28;
-  });
-  const recentVol = recentSessions.reduce((a,s)=>a+s.reps*(s.weight||S.settings.weight),0);
-  const oldVol = oldSessions.reduce((a,s)=>a+s.reps*(s.weight||S.settings.weight),0);
+  // Gym volume delta (from new workout format)
+  const now = Date.now();
+  const workouts = S.gym.workouts || [];
+  const recentVol = workouts.filter(w=>(now-w.ts)<14*86400000).reduce((a,w)=>a+w.sets.reduce((b,s)=>b+(s.isBodyweight?0:s.weight*s.reps),0),0);
+  const oldVol = workouts.filter(w=>{const age=(now-w.ts)/86400000;return age>=14&&age<28;}).reduce((a,w)=>a+w.sets.reduce((b,s)=>b+(s.isBodyweight?0:s.weight*s.reps),0),0);
   const volImproving = recentVol > oldVol*1.05;
 
   let musclePct, fatPct, muscleLabel, fatLabel;
   if(weightDelta > 0 && volImproving) {
     musclePct=70; fatPct=30;
-    muscleLabel=`~Muscle gain: +${(weightDelta*0.7).toFixed(1)}kg`;
-    fatLabel=`Fat gain: +${(weightDelta*0.3).toFixed(1)}kg`;
+    muscleLabel=`~Muscle gain: +${(weightDelta*0.7).toFixed(1)}lbs`;
+    fatLabel=`Fat gain: +${(weightDelta*0.3).toFixed(1)}lbs`;
   } else if(weightDelta > 0) {
     musclePct=25; fatPct=75;
-    muscleLabel=`Muscle gain: ~+${(weightDelta*0.25).toFixed(1)}kg`;
-    fatLabel=`Fat gain: ~+${(weightDelta*0.75).toFixed(1)}kg`;
+    muscleLabel=`Muscle gain: ~+${(weightDelta*0.25).toFixed(1)}lbs`;
+    fatLabel=`Fat gain: ~+${(weightDelta*0.75).toFixed(1)}lbs`;
   } else if(weightDelta < -0.5) {
     musclePct=85; fatPct=15;
-    muscleLabel=`Muscle held: +${(Math.abs(weightDelta)*0.85).toFixed(1)}kg`;
-    fatLabel=`Fat loss: ~${Math.abs(weightDelta).toFixed(1)}kg`;
+    muscleLabel=`Muscle held: +${(Math.abs(weightDelta)*0.85).toFixed(1)}lbs`;
+    fatLabel=`Fat loss: ~${Math.abs(weightDelta).toFixed(1)}lbs`;
   } else {
     musclePct=50; fatPct=50;
     muscleLabel='Weight stable'; fatLabel='Recomp likely';
@@ -1693,61 +1814,6 @@ function loadPhoto(n, input) {
   toast(`Photo ${n===1?'Before':'After'} loaded`);
 }
 
-// ════════════════════════════════════════════
-// WORKOUT SUMMARY
-// ════════════════════════════════════════════
-
-function renderWorkoutSummary() {
-  const today = todayKey();
-  const todaySets = S.gym.sessions.filter(s=>s.date===today);
-  const totalVol = todaySets.reduce((a,s)=>a+s.reps*(s.weight||S.settings.weight),0);
-  const totalKg = todaySets.reduce((a,s)=>a+s.weight,0);
-
-  document.getElementById('sumSets').textContent = todaySets.length;
-  document.getElementById('sumKg').textContent = totalKg.toFixed(0);
-  document.getElementById('sumVol').textContent = totalVol>999?`${(totalVol/1000).toFixed(1)}k`:totalVol;
-
-  const done = !!(S.workoutDone||{})[today];
-  const btn = document.getElementById('markDoneBtn');
-  btn.textContent = done ? '✓ Workout Done!' : 'Mark Workout Done';
-  btn.className = 'mark-done-btn' + (done?' done':'');
-
-  // Past workouts panel
-  const panel = document.getElementById('pastWorkoutsPanel');
-  const byDate = {};
-  S.gym.sessions.forEach(s=>{
-    if(s.date===today) return;
-    if(!byDate[s.date]) byDate[s.date]=[];
-    byDate[s.date].push(s);
-  });
-  const dates = Object.keys(byDate).sort().reverse().slice(0,10);
-  if(!dates.length) { panel.innerHTML='<div class="empty-state">No past workouts yet</div>'; return; }
-  panel.innerHTML = dates.map(d=>{
-    const sets = byDate[d];
-    const vol = sets.reduce((a,s)=>a+s.reps*(s.weight||S.settings.weight),0);
-    const exs = [...new Set(sets.map(s=>s.exercise))].slice(0,3).join(', ');
-    return `<div class="past-entry">
-      <span class="past-entry-date">${new Date(d+'T12:00:00').toLocaleDateString('en',{month:'short',day:'numeric'})}</span>
-      <span class="past-entry-detail">${exs}${sets.length>3?'…':''}</span>
-      <span class="past-entry-vol">${vol}kg vol</span>
-    </div>`;
-  }).join('');
-}
-
-function markWorkoutDone() {
-  const today = todayKey();
-  if(!S.workoutDone) S.workoutDone={};
-  S.workoutDone[today] = !S.workoutDone[today];
-  save(); renderWorkoutSummary();
-  if(S.workoutDone[today]) {
-    toast('Workout marked complete! 💪');
-    if(!hasFeedCardToday('gym')) pushWorkoutCard();
-  }
-}
-
-function togglePastWorkouts() {
-  document.getElementById('pastWorkoutsPanel').classList.toggle('open');
-}
 
 // ════════════════════════════════════════════
 // FEED
@@ -1776,11 +1842,12 @@ function pushFeedCard(category, body) {
 }
 
 function pushWorkoutCard() {
-  const sets = S.gym.sessions.filter(s => s.date === todayKey());
-  const vol = sets.reduce((a,s) => a + s.reps*(s.weight||S.settings.weight), 0);
-  const exs = [...new Set(sets.map(s => s.exercise))];
+  const latest = (S.gym.workouts || [])[0];
+  if (!latest) return;
+  const exs = [...new Set(latest.sets.map(s => s.exercise))];
+  const vol = latest.sets.reduce((a,s) => a + (s.isBodyweight ? 0 : s.weight * s.reps), 0);
   pushFeedCard('gym',
-    `Workout complete! ${exs.slice(0,3).join(', ')}${exs.length>3?'…':''}. ${sets.length} sets · ${vol>999?(vol/1000).toFixed(1)+'k':vol}kg volume. Stay consistent — that's how you build a physique.`
+    `Workout complete! ${exs.slice(0,3).join(', ')}${exs.length>3?'…':''}. ${latest.sets.length} sets · ${vol>999?(vol/1000).toFixed(1)+'k':vol}lbs volume. Stay consistent — that's how you build a physique.`
   );
 }
 
@@ -1962,7 +2029,7 @@ function renderProfile() {
   const s = S.settings;
   document.getElementById('prof_name').value      = s.name || 'George Kourtis';
   document.getElementById('prof_age').value       = s.age  || 17;
-  document.getElementById('prof_weight').value    = s.weight || 77;
+  document.getElementById('prof_weight').value    = s.weight || 170;
   document.getElementById('prof_height').value    = s.height || 178;
   document.getElementById('prof_trainDays').value = s.trainingDaysPerWeek || 4;
   document.getElementById('prof_bottleSize').value= s.bottleSize || 500;
@@ -1986,7 +2053,7 @@ function saveProfile() {
   const s = S.settings;
   s.name              = document.getElementById('prof_name').value.trim() || 'George Kourtis';
   s.age               = parseInt(document.getElementById('prof_age').value)        || 17;
-  s.weight            = parseFloat(document.getElementById('prof_weight').value)   || 77;
+  s.weight            = parseFloat(document.getElementById('prof_weight').value)   || 170;
   s.height            = parseInt(document.getElementById('prof_height').value)     || 178;
   s.trainingDaysPerWeek = parseInt(document.getElementById('prof_trainDays').value)|| 4;
   s.bottleSize        = parseInt(document.getElementById('prof_bottleSize').value) || 500;
@@ -2182,7 +2249,7 @@ function switchTab(tab) {
   document.getElementById('content').scrollTop = 0;
 
   if(tab==='health')  { renderWater(); renderStack(); }
-  if(tab==='gym')     { drawGymChart(); drawWeightChart(); updateComposition(); renderWorkoutSummary(); }
+  if(tab==='gym')     { drawWeightChart(); updateComposition(); renderPastWorkouts(); renderExerciseTrends(); }
   if(tab==='feed')    { renderFeed(); }
   if(tab==='profile') { renderProfile(); }
 }
@@ -2212,16 +2279,13 @@ function escHtml(s) {
 document.addEventListener('click',e=>{
   if(!e.target.closest('.autocomplete-wrap'))
     document.getElementById('suppDrop').style.display='none';
-  if(!e.target.closest('#exerciseWrap'))
-    document.getElementById('exerciseDrop').style.display='none';
+  if(!e.target.closest('#gymExWrap'))
+    document.getElementById('gymExDrop').style.display='none';
 });
 
 // Enter key for inputs
 document.getElementById('goalInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addGoal(); });
 document.getElementById('planInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlan(); });
-
-// Weight input sync
-document.getElementById('weightInput').addEventListener('input',function(){ S.gym.weight=parseFloat(this.value)||0; });
 
 // ════════════════════════════════════════════
 // MIDNIGHT & 6AM CHECKS
@@ -2255,20 +2319,14 @@ function init() {
     `0<span style="font-size:20px;font-weight:400;color:var(--t2);">/${initTarget}</span>`;
   document.getElementById('waterSubText').textContent = `0 bottles · 0 ml`;
 
-  // Gym UI init
-  document.querySelectorAll('.day-tab').forEach(el=>{
-    el.classList.toggle('active', el.dataset.day===S.gym.day);
-  });
-  renderExercises();
-  renderRepGrid();
-  document.getElementById('weightInput').value = S.gym.weight||60;
+  // Gym init
+  renderGymRepGrid();
+  renderPastWorkouts();
+  renderExerciseTrends();
 
   renderRing();
   renderGoals();
   renderTicker();
-  renderGymStats();
-  renderRecommend();
-  renderWorkoutSummary();
   renderProfile();
 
   // Tick ring every 30s
@@ -2277,7 +2335,7 @@ function init() {
   // Redraw charts on resize
   window.addEventListener('resize',()=>{
     if(currentTab==='health') { drawWaterChart(); }
-    if(currentTab==='gym') { drawGymChart(); drawWeightChart(); }
+    if(currentTab==='gym') { drawWeightChart(); }
   });
 }
 
