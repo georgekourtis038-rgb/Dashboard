@@ -242,37 +242,45 @@ canvas{display:block;width:100%;height:100%;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 .pill{display:inline-flex;align-items:center;gap:4px;background:#1a1a1a;border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--t2);}
 
-/* ── FEED ── */
-.feed-header-row{display:flex;align-items:center;margin-bottom:16px;}
-.feed-page-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;}
-.feed-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 14px 14px 17px;margin-bottom:12px;border-left:3px solid transparent;}
-.feed-card-gym{border-left-color:#4f8ef7;}
-.feed-card-water{border-left-color:#0d9488;}
-.feed-card-stack{border-left-color:#3ecf5c;}
-.feed-card-goals{border-left-color:#f59e0b;}
-.feed-card-review{border-left-color:#a78bfa;}
-.feed-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
-.feed-coach-name{font-size:12px;font-weight:700;color:var(--t1);}
-.feed-tag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;padding:2px 8px;border-radius:10px;flex-shrink:0;}
-.feed-tag-gym{background:rgba(79,142,247,0.15);color:#4f8ef7;}
-.feed-tag-water{background:rgba(13,148,136,0.15);color:#0d9488;}
-.feed-tag-stack{background:rgba(62,207,92,0.15);color:#3ecf5c;}
-.feed-tag-goals{background:rgba(245,158,11,0.15);color:#f59e0b;}
-.feed-tag-review{background:rgba(167,139,250,0.15);color:#a78bfa;}
-.feed-pin-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--purple);background:rgba(167,139,250,0.08);border-radius:8px;padding:2px 7px;border:1px solid rgba(167,139,250,0.18);}
-.feed-timestamp{font-size:11px;color:var(--t3);margin-left:auto;}
-.feed-body{font-size:13px;line-height:1.65;color:var(--t2);}
-.feed-setup{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:26px 18px;text-align:center;margin-bottom:12px;}
-.feed-setup-icon{font-size:30px;margin-bottom:10px;}
-.feed-setup-title{font-size:15px;font-weight:700;margin-bottom:6px;}
-.feed-setup-desc{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:14px;}
-.feed-generate-card{background:var(--card);border:1px solid rgba(167,139,250,0.2);border-radius:var(--radius);padding:16px 16px 16px 19px;margin-bottom:12px;border-left:3px solid #a78bfa;}
-.feed-loading{display:flex;align-items:center;gap:6px;padding:6px 0;}
-.feed-loading-dot{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:fdot 1.2s ease-in-out infinite;}
-.feed-loading-dot:nth-child(2){animation-delay:0.2s;}
-.feed-loading-dot:nth-child(3){animation-delay:0.4s;}
+/* ── INSTAGRAM FEED ── */
+#page-feed{padding:0;}
+.ig-feed-header{display:flex;align-items:center;padding:14px 14px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;background:var(--bg);}
+.ig-feed-title{font-size:20px;font-weight:800;letter-spacing:-0.5px;font-style:italic;flex:1;}
+.ig-gen-btn{font-size:11px;font-weight:700;color:var(--purple);background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:20px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;}
+.ig-gen-btn:hover{opacity:0.8;}
+.ig-post{background:var(--bg);border-bottom:1px solid var(--border);}
+.ig-post-header{display:flex;align-items:center;gap:10px;padding:10px 14px;}
+.ig-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0a2e14,#1a5c3a);border:2px solid #2a7a4a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#3ecf5c;flex-shrink:0;letter-spacing:0.5px;}
+.ig-username-row{flex:1;display:flex;align-items:center;gap:5px;}
+.ig-username{font-size:13.5px;font-weight:700;color:var(--t1);}
+.ig-dots{color:var(--t2);font-size:22px;padding:4px 8px;letter-spacing:1.5px;line-height:1;cursor:pointer;transition:color 0.15s;background:none;border:none;}
+.ig-dots:hover{color:var(--t1);}
+.ig-img-wrap{width:100%;background:#111;position:relative;overflow:hidden;}
+.ig-img{width:100%;display:block;max-height:340px;min-height:160px;object-fit:cover;}
+.ig-img-placeholder{width:100%;height:200px;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#111,#1a1a1a);}
+.ig-actions{display:flex;align-items:center;padding:10px 12px 4px;gap:14px;}
+.ig-act-btn{background:none;border:none;cursor:pointer;color:var(--t1);padding:2px;display:flex;align-items:center;transition:transform 0.12s;}
+.ig-act-btn:active{transform:scale(0.82);}
+.ig-heart.liked svg{fill:var(--red);stroke:var(--red);}
+.ig-bm{margin-left:auto;}
+.ig-bm.saved svg{fill:var(--t1);}
+.ig-caption-wrap{padding:2px 14px 4px;font-size:13px;line-height:1.5;color:var(--t2);}
+.ig-cap-user{font-weight:700;color:var(--t1);margin-right:4px;}
+.ig-cap-text{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.ig-cap-text.open{display:block;-webkit-line-clamp:unset;overflow:visible;}
+.ig-more-btn{color:var(--t3);font-size:12px;cursor:pointer;background:none;border:none;padding:0;font-family:inherit;}
+.ig-ts{padding:2px 14px 14px;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;}
+.ig-empty{text-align:center;padding:48px 24px;color:var(--t3);font-size:13px;line-height:1.6;}
+.ig-setup{padding:24px 18px;text-align:center;border-bottom:1px solid var(--border);}
+.ig-setup-icon{font-size:32px;margin-bottom:10px;}
+.ig-setup-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.ig-setup-desc{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:14px;}
+.ig-review-post{background:#0a0810;}
+.ig-loading-row{display:flex;align-items:center;gap:8px;padding:14px 14px 20px;}
+.ig-loading-dot{width:7px;height:7px;border-radius:50%;background:var(--purple);animation:fdot 1.2s ease-in-out infinite;}
+.ig-loading-dot:nth-child(2){animation-delay:0.2s;}
+.ig-loading-dot:nth-child(3){animation-delay:0.4s;}
 @keyframes fdot{0%,100%{opacity:0.2;transform:scale(0.7);}50%{opacity:1;transform:scale(1.15);}}
-.api-key-panel{background:#0d0d0d;border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;}
 
 /* ── PROFILE ── */
 .prof-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
@@ -638,13 +646,6 @@ canvas{display:block;width:100%;height:100%;}
 
     <!-- ══ FEED TAB ══ -->
     <div class="page" id="page-feed">
-
-      <!-- Header -->
-      <div class="feed-header-row">
-        <div class="feed-page-title">George's Coach</div>
-      </div>
-
-      <!-- Feed Cards -->
       <div id="feedCards"></div>
     </div>
 
@@ -869,6 +870,20 @@ const KEY = 'wd3_v1';
 const FEED_KEY = 'wd3_feed_v1';
 const API_KEY_STORE = 'george_api_key';
 
+// Unsplash keyword map per feed category
+// NOTE: source.unsplash.com is used as specified — enable public access in your Supabase project
+const IMG_KW = {
+  water:  'water,hydration,drink',
+  gym:    'gym,workout,weights,fitness',
+  stack:  'supplements,vitamins,health',
+  goals:  'success,achievement,motivation',
+  review: 'planning,journal,analytics'
+};
+
+// ── SUPABASE: feed_posts table SQL (run in SQL Editor) ──
+// CREATE TABLE feed_posts (user_id TEXT PRIMARY KEY, posts JSONB DEFAULT '[]', updated_at TIMESTAMPTZ DEFAULT NOW());
+// ALTER TABLE feed_posts ENABLE ROW LEVEL SECURITY; CREATE POLICY "open" ON feed_posts FOR ALL USING (true) WITH CHECK (true);
+
 // ── SUPABASE CONFIG ──
 // Run this SQL in your Supabase project (SQL Editor) before first use:
 // CREATE TABLE settings      (user_id TEXT PRIMARY KEY, data JSONB DEFAULT '{}', updated_at TIMESTAMPTZ DEFAULT NOW());
@@ -891,14 +906,6 @@ let syncTimer = null;
 
 let feedCards = [];
 let reviewLoading = false;
-
-const FEED_CAT = {
-  gym:    { label:'Gym',    tag:'feed-tag-gym',    card:'feed-card-gym' },
-  water:  { label:'Water',  tag:'feed-tag-water',  card:'feed-card-water' },
-  stack:  { label:'Stack',  tag:'feed-tag-stack',  card:'feed-card-stack' },
-  goals:  { label:'Goals',  tag:'feed-tag-goals',  card:'feed-card-goals' },
-  review: { label:'Review', tag:'feed-tag-review', card:'feed-card-review' }
-};
 
 const ACTIVITY_LEVELS = [
   { val:'sedentary',  label:'Sedentary', hours:0  },
@@ -2163,31 +2170,83 @@ function saveFeed() {
   const rest = feedCards.filter(c => c.category !== 'review').slice(0, 80);
   feedCards = [...reviews, ...rest];
   localStorage.setItem(FEED_KEY, JSON.stringify(feedCards));
+  syncFeedToSupabase().catch(console.warn);
+}
+
+async function syncFeedToSupabase() {
+  const userId = getUsername();
+  if (!userId || !sb) return;
+  await sb.from('feed_posts').upsert(
+    { user_id: userId, posts: feedCards, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id' }
+  );
+}
+
+async function loadFeedFromSupabase() {
+  const userId = getUsername();
+  if (!userId || !sb) return;
+  try {
+    const { data } = await sb.from('feed_posts').select('posts').eq('user_id', userId).maybeSingle();
+    if (data && Array.isArray(data.posts) && data.posts.length) {
+      feedCards = data.posts;
+      localStorage.setItem(FEED_KEY, JSON.stringify(feedCards));
+    }
+  } catch(e) { console.warn('Feed load error:', e); }
 }
 
 function hasFeedCardToday(category) {
   return feedCards.some(c => c.category === category && c.timestamp.slice(0,10) === todayKey());
 }
 
-function pushFeedCard(category, body) {
-  feedCards.unshift({ id: Date.now() + Math.random(), category, timestamp: new Date().toISOString(), body });
+function pushFeedCard(category, caption, imageKeyword) {
+  const kw = imageKeyword || IMG_KW[category] || 'health,fitness';
+  feedCards.unshift({
+    id: Date.now(),
+    category,
+    timestamp: new Date().toISOString(),
+    caption,
+    imageKeyword: kw,
+    liked: false,
+    bookmarked: false
+  });
   saveFeed();
   if (document.getElementById('page-feed').classList.contains('active')) renderFeed();
+}
+
+function detectPRs(workout) {
+  const prs = [];
+  const past = (S.gym.workouts || []).slice(1);
+  workout.sets.forEach(set => {
+    if (set.isBodyweight) return;
+    const prevBest = past.flatMap(w => w.sets)
+      .filter(s => s.exercise === set.exercise && !s.isBodyweight)
+      .reduce((max, s) => Math.max(max, s.weight || 0), 0);
+    if (prevBest > 0 && (set.weight || 0) > prevBest && !prs.find(p => p.exercise === set.exercise)) {
+      prs.push({ exercise: set.exercise, weight: set.weight, reps: set.reps, prev: prevBest });
+    }
+  });
+  return prs;
 }
 
 function pushWorkoutCard() {
   const latest = (S.gym.workouts || [])[0];
   if (!latest) return;
   const exs = [...new Set(latest.sets.map(s => s.exercise))];
-  const vol = latest.sets.reduce((a,s) => a + (s.isBodyweight ? 0 : s.weight * s.reps), 0);
-  pushFeedCard('gym',
-    `Workout complete! ${exs.slice(0,3).join(', ')}${exs.length>3?'…':''}. ${latest.sets.length} sets · ${vol>999?(vol/1000).toFixed(1)+'k':vol}lbs volume. Stay consistent — that's how you build a physique.`
-  );
+  const vol = latest.sets.reduce((a,s) => a + (s.isBodyweight ? 0 : (s.weight||0) * s.reps), 0);
+  const prs = detectPRs(latest);
+  let caption;
+  if (prs.length > 0) {
+    const pr = prs[0];
+    caption = `New PR on ${pr.exercise}! ${pr.weight} lbs × ${pr.reps} reps — up from ${pr.prev} lbs. That's the kind of progression that builds a physique. Keep pushing.`;
+  } else {
+    caption = `Workout complete! ${exs.slice(0,3).join(', ')}${exs.length>3?'…':''}. ${latest.sets.length} sets · ${vol>999?(vol/1000).toFixed(1)+'k':vol} lbs volume. Consistency wins — show up tomorrow.`;
+  }
+  pushFeedCard('gym', caption);
 }
 
 function pushWaterCard() {
   pushFeedCard('water',
-    `Hydration goal reached! ${bottleTarget()} bottles · ${calcWaterGoal().toLocaleString()}ml. Consistent hydration means better energy, recovery, and focus. Great work today.`
+    `Hydration goal reached — ${bottleTarget()} bottles today. Consistent hydration means better energy, recovery, and focus. Great work.`
   );
 }
 
@@ -2199,95 +2258,243 @@ function pushStackCard() {
 }
 
 function pushGoalCard(goalText) {
-  feedCards.unshift({ id: Date.now()+Math.random(), category:'goals', timestamp:new Date().toISOString(),
-    body:`Goal achieved: "${goalText}". ${S.goals.streak>1?`${S.goals.streak}-day streak going strong!`:'Great execution. Keep stacking those wins.'}`
-  });
-  saveFeed();
-  if (document.getElementById('page-feed').classList.contains('active')) renderFeed();
+  pushFeedCard('goals',
+    `Goal achieved: "${goalText}". ${S.goals.streak>1?`${S.goals.streak}-day streak going strong!`:'Great execution. Keep stacking those wins.'}`
+  );
+}
+
+// Smart trigger checks — run on init and after significant events
+function checkFeedTriggers() {
+  const waterGoal = calcWaterGoal();
+  function dayWaterMl(k) { return (S.water.days[k]||[]).reduce((a,b)=>a+b,0); }
+  function dayBottles(k) { return (S.water.days[k]||[]).length; }
+  function pastKey(n) { const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
+
+  // Trigger 1: Water behind 2+ consecutive days
+  if (!hasFeedCardToday('water')) {
+    let behindDays=0;
+    let totalBottles=0;
+    for (let i=1; i<=7; i++) {
+      const k = pastKey(i);
+      if (dayWaterMl(k) < waterGoal) { behindDays++; totalBottles += dayBottles(k); } else break;
+    }
+    if (behindDays >= 2) {
+      const avg = Math.round(totalBottles / behindDays);
+      pushFeedCard('water',
+        `You've been hitting ${avg} bottle${avg!==1?'s':''} the last ${behindDays} days. Your target is ${bottleTarget()}. Hydration directly affects your energy, recovery, and focus. Time to lock in.`
+      );
+      return; // only one water trigger per day
+    }
+  }
+
+  // Trigger 2: Water goal hit 3 days straight
+  if (!hasFeedCardToday('water')) {
+    let streak=0;
+    for (let i=1; i<=14; i++) { if (dayWaterMl(pastKey(i)) >= waterGoal) streak++; else break; }
+    if (streak >= 3) {
+      pushFeedCard('water',
+        `${streak} days straight hitting your water goal. Elite-level consistency. Hydration is the foundation everything else is built on — keep it going.`
+      );
+    }
+  }
+
+  // Trigger 3: No workout in 4+ days
+  if (!hasFeedCardToday('gym')) {
+    const lastW = (S.gym.workouts||[])[0];
+    if (lastW) {
+      const days = Math.floor((Date.now() - new Date(lastW.date+'T12:00:00')) / 86400000);
+      if (days >= 4) {
+        pushFeedCard('gym',
+          `It's been ${days} days since your last workout. Recovery matters, but ${days} days is getting long. Even a short session today will re-activate your momentum.`
+        );
+      }
+    }
+  }
+
+  // Trigger 4: Full supplement stack completed 5 days straight
+  if (!hasFeedCardToday('stack')) {
+    const supps = S.stack.supplements||[];
+    if (supps.length > 0) {
+      let stackStreak=0;
+      for (let i=1; i<=14; i++) {
+        const dayData = S.stack.days[pastKey(i)]||{};
+        if (supps.every(s=>dayData[s.id])) stackStreak++; else break;
+      }
+      if (stackStreak >= 5) {
+        pushFeedCard('stack',
+          `${stackStreak} consecutive days completing your full supplement stack. Consistency at this level is rare — your body is getting everything it needs. Keep the habit going.`
+        );
+      }
+    }
+  }
+
+  // Trigger 5: Sunday auto weekly review
+  if (new Date().getDay() === 0) {
+    const weekAgo = Date.now() - 7*24*60*60*1000;
+    const recentReview = feedCards.find(c => c.category==='review' && new Date(c.timestamp).getTime() > weekAgo);
+    if (!recentReview && localStorage.getItem(API_KEY_STORE)) {
+      generateWeeklyReview();
+    }
+  }
 }
 
 function formatFeedTime(iso) {
   const diff = Math.floor((Date.now() - new Date(iso)) / 60000);
-  if (diff < 1) return 'just now';
-  if (diff < 60) return diff + 'm ago';
+  if (diff < 2) return 'just now';
+  if (diff < 60) return diff + ' minutes ago';
   const h = Math.floor(diff/60);
-  if (h < 24) return h + 'h ago';
+  if (h < 24) return h === 1 ? '1 hour ago' : h + ' hours ago';
   const d = Math.floor(h/24);
-  if (d < 7) return d + 'd ago';
+  if (d === 1) return 'Yesterday';
+  if (d < 7) return d + ' days ago';
   return new Date(iso).toLocaleDateString('en',{month:'short',day:'numeric'});
+}
+
+// ── Instagram-style post renderer ──
+
+function igPostHTML(c) {
+  const caption = c.caption || c.body || '';
+  const kw = c.imageKeyword || IMG_KW[c.category] || 'health,fitness';
+  // Use the post ID as a cache-buster so each post gets a consistent but unique image
+  const sig = Math.abs(Math.floor(Number(c.id)) % 1000);
+  const imgSrc = `https://source.unsplash.com/480x300/?${kw}&sig=${sig}`;
+  const isLong = caption.length > 130;
+  const isReview = c.category === 'review';
+  const catEmoji = {water:'💧',gym:'🏋️',stack:'💊',goals:'🎯',review:'📊'}[c.category] || '✦';
+  const id = c.id;
+
+  return `<div class="ig-post${isReview?' ig-review-post':''}" id="igp-${id}">
+    <div class="ig-post-header">
+      <div class="ig-avatar">GC</div>
+      <div class="ig-username-row">
+        <span class="ig-username">George's Coach ⭐</span>
+      </div>
+      <button class="ig-dots" onclick="igMenu('${id}')">···</button>
+    </div>
+    <div class="ig-img-wrap">
+      <img class="ig-img" src="${imgSrc}" loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" alt="">
+      <div class="ig-img-placeholder" style="display:none;">${catEmoji}</div>
+    </div>
+    <div class="ig-actions">
+      <button class="ig-act-btn ig-heart${c.liked?' liked':''}" onclick="toggleLike('${id}')">
+        <svg width="24" height="24" viewBox="0 0 24 24"
+          fill="${c.liked?'var(--red)':'none'}"
+          stroke="${c.liked?'var(--red)':'currentColor'}"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+      <button class="ig-act-btn" style="opacity:0.45;pointer-events:none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+      <button class="ig-act-btn ig-bm${c.bookmarked?' saved':''}" onclick="toggleBookmark('${id}')">
+        <svg width="22" height="22" viewBox="0 0 24 24"
+          fill="${c.bookmarked?'var(--t1)':'none'}"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="ig-caption-wrap">
+      <span class="ig-cap-user">George's Coach</span><span class="ig-cap-text${isLong?'':' open'}" id="igct-${id}">${escHtml(caption).replace(/\n/g,'<br>')}</span>${isLong?`<button class="ig-more-btn" id="igmb-${id}" onclick="expandCaption('${id}')"> more</button>`:''}
+    </div>
+    <div class="ig-ts">${formatFeedTime(c.timestamp)}</div>
+  </div>`;
 }
 
 function renderFeed() {
   const container = document.getElementById('feedCards');
   if (!container) return;
   const apiKey = localStorage.getItem(API_KEY_STORE);
-  const review = feedCards.find(c => c.category === 'review');
-  const rest = feedCards.filter(c => c.category !== 'review');
-  let html = '';
 
-  // ── Top card: review / generate / setup ──
+  let html = `<div class="ig-feed-header">
+    <div class="ig-feed-title">George's Coach</div>
+    <button class="ig-gen-btn" onclick="generateWeeklyReview()">✦ Weekly Review</button>
+  </div>`;
+
   if (!apiKey) {
-    html += `<div class="feed-setup">
-      <div class="feed-setup-icon">🤖</div>
-      <div class="feed-setup-title">Setup Your Coach</div>
-      <div class="feed-setup-desc">Add your Anthropic API key to get personalized weekly coaching reviews powered by Claude.</div>
+    html += `<div class="ig-setup">
+      <div class="ig-setup-icon">🤖</div>
+      <div class="ig-setup-title">Setup Your Coach</div>
+      <div class="ig-setup-desc">Add your Anthropic API key in Profile to unlock personalized AI weekly reviews powered by Claude.</div>
       <button class="save-small" onclick="switchTab('profile')" style="margin:0;">Add API Key in Profile →</button>
     </div>`;
-  } else if (reviewLoading) {
-    html += `<div class="feed-generate-card">
-      <div class="feed-meta">
-        <span class="feed-coach-name">George's Coach</span>
-        <span class="feed-tag feed-tag-review">Review</span>
-        <span class="feed-pin-badge">📌 Weekly</span>
+  }
+
+  if (reviewLoading) {
+    html += `<div class="ig-post ig-review-post">
+      <div class="ig-post-header">
+        <div class="ig-avatar">GC</div>
+        <div class="ig-username-row"><span class="ig-username">George's Coach ⭐</span></div>
       </div>
-      <div class="feed-loading">
-        <div class="feed-loading-dot"></div><div class="feed-loading-dot"></div><div class="feed-loading-dot"></div>
+      <div class="ig-loading-row">
+        <div class="ig-loading-dot"></div>
+        <div class="ig-loading-dot"></div>
+        <div class="ig-loading-dot"></div>
         <span style="margin-left:6px;color:var(--t2);font-size:13px;">Analyzing your week…</span>
       </div>
     </div>`;
-  } else if (review) {
-    html += `<div class="feed-card feed-card-review">
-      <div class="feed-meta">
-        <span class="feed-coach-name">George's Coach</span>
-        <span class="feed-tag feed-tag-review">Review</span>
-        <span class="feed-pin-badge">📌 Weekly</span>
-        <span class="feed-timestamp">${formatFeedTime(review.timestamp)}</span>
-      </div>
-      <div class="feed-body">${escHtml(review.body).replace(/\n/g,'<br>')}</div>
-      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
-        <button class="expand-btn" onclick="generateWeeklyReview()">↻ Refresh Review</button>
-      </div>
-    </div>`;
-  } else {
-    html += `<div class="feed-generate-card">
-      <div class="feed-meta">
-        <span class="feed-coach-name">George's Coach</span>
-        <span class="feed-tag feed-tag-review">Review</span>
-        <span class="feed-pin-badge">📌 Weekly</span>
-      </div>
-      <div style="font-size:13px;color:var(--t2);margin-bottom:14px;line-height:1.5;">Get your personalized weekly coaching review — analysis of your workouts, hydration, supplement adherence, and goal streak.</div>
-      <button class="save-small" onclick="generateWeeklyReview()" style="margin:0;">Generate Weekly Review</button>
-    </div>`;
   }
 
-  // ── Activity cards ──
-  if (rest.length) {
-    html += rest.map(c => {
-      const cat = FEED_CAT[c.category] || FEED_CAT.gym;
-      return `<div class="feed-card ${cat.card}">
-        <div class="feed-meta">
-          <span class="feed-coach-name">George's Coach</span>
-          <span class="feed-tag ${cat.tag}">${cat.label}</span>
-          <span class="feed-timestamp">${formatFeedTime(c.timestamp)}</span>
-        </div>
-        <div class="feed-body">${escHtml(c.body)}</div>
-      </div>`;
-    }).join('');
+  if (!feedCards.length && !reviewLoading) {
+    html += `<div class="ig-empty">Complete goals, log workouts, and hit milestones —<br>your posts will appear here.</div>`;
   } else {
-    html += `<div class="empty-state" style="margin-top:12px;">Complete goals, log workouts, and hit milestones — your activity cards will appear here.</div>`;
+    html += feedCards.map(c => igPostHTML(c)).join('');
   }
 
   container.innerHTML = html;
+}
+
+function toggleLike(id) {
+  const post = feedCards.find(c => String(c.id) === String(id));
+  if (!post) return;
+  post.liked = !post.liked;
+  saveFeed();
+  const el = document.getElementById('igp-' + id);
+  if (!el) return;
+  const btn = el.querySelector('.ig-heart');
+  if (btn) {
+    btn.classList.toggle('liked', post.liked);
+    const svg = btn.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', post.liked ? 'var(--red)' : 'none');
+      svg.setAttribute('stroke', post.liked ? 'var(--red)' : 'currentColor');
+    }
+  }
+}
+
+function toggleBookmark(id) {
+  const post = feedCards.find(c => String(c.id) === String(id));
+  if (!post) return;
+  post.bookmarked = !post.bookmarked;
+  saveFeed();
+  const el = document.getElementById('igp-' + id);
+  if (!el) return;
+  const btn = el.querySelector('.ig-bm');
+  if (btn) {
+    btn.classList.toggle('saved', post.bookmarked);
+    const svg = btn.querySelector('svg');
+    if (svg) svg.setAttribute('fill', post.bookmarked ? 'var(--t1)' : 'none');
+  }
+}
+
+function expandCaption(id) {
+  const textEl = document.getElementById('igct-' + id);
+  const btnEl  = document.getElementById('igmb-' + id);
+  if (textEl) textEl.classList.add('open');
+  if (btnEl)  btnEl.style.display = 'none';
+}
+
+function igMenu(id) {
+  if (confirm('Delete this post?')) {
+    feedCards = feedCards.filter(c => String(c.id) !== String(id));
+    saveFeed();
+    renderFeed();
+  }
 }
 
 async function generateWeeklyReview() {
@@ -2297,27 +2504,26 @@ async function generateWeeklyReview() {
   reviewLoading = true;
   renderFeed();
 
-  // Build summary context
   const weekKeys = Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-i); return d.toISOString().slice(0,10); });
   const waterGoal = calcWaterGoal();
   const waterHit = weekKeys.filter(k=>(S.water.days[k]||[]).reduce((a,b)=>a+b,0)>=waterGoal).length;
   const supps = S.stack.supplements||[];
   const stackHit = weekKeys.filter(k=>supps.length>0&&supps.every(s=>(S.stack.days[k]||{})[s.id])).length;
-  const weekSessions = S.gym.sessions.filter(s=>weekKeys.includes(s.date));
-  const gymDays = [...new Set(weekSessions.map(s=>s.date))].length;
-  const gymVol = weekSessions.reduce((a,s)=>a+s.reps*(s.weight||S.settings.weight),0);
-  const topEx = [...weekSessions.reduce((m,s)=>{m.set(s.exercise,(m.get(s.exercise)||0)+1);return m;},new Map())]
+  const weekWorkouts = (S.gym.workouts||[]).filter(w=>weekKeys.includes(w.date));
+  const gymDays = weekWorkouts.length;
+  const allSets = weekWorkouts.flatMap(w=>w.sets);
+  const gymVol = allSets.reduce((a,s)=>a+(s.isBodyweight?0:(s.weight||0)*s.reps),0);
+  const topEx = [...allSets.reduce((m,s)=>{m.set(s.exercise,(m.get(s.exercise)||0)+1);return m;},new Map())]
     .sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>e[0]);
   const recentW = S.weights.slice(-7);
   const wtTrend = recentW.length>=2?(recentW[recentW.length-1].kg-recentW[0].kg).toFixed(1):null;
 
   const context = [
-    `Profile: ${S.settings.sex}, age ${S.settings.age}, ${S.settings.weight}kg.`,
-    `Hydration: Hit water goal ${waterHit}/7 days (${waterGoal}ml/day target).`,
-    `Supplements: Completed full stack ${stackHit}/7 days (${supps.length} supplements).`,
-    `Training: ${gymDays} gym days, ${weekSessions.length} sets, ${gymVol>999?(gymVol/1000).toFixed(1)+'k':gymVol}kg volume.${topEx.length?' Exercises: '+topEx.join(', ')+'.':''}`,
-    `Goal streak: ${S.goals.streak||0} days.`,
-    wtTrend!==null?`Body weight trend: ${wtTrend>0?'+':''}${wtTrend}kg this week.`:null
+    `Profile: ${S.settings.sex}, age ${S.settings.age}, ${S.settings.weight} lbs, goal streak ${S.goals.streak||0} days.`,
+    `Hydration: Hit water goal ${waterHit}/7 days (target ${waterGoal} ml/day, ${bottleTarget()} bottles).`,
+    `Supplements: Completed full stack ${stackHit}/7 days (${supps.length} supplements in stack).`,
+    `Training: ${gymDays} workout${gymDays!==1?'s':''} this week, ${allSets.length} total sets, ${gymVol>999?(gymVol/1000).toFixed(1)+'k':gymVol} lbs volume.${topEx.length?' Top exercises: '+topEx.join(', ')+'.':''}`,
+    wtTrend!==null?`Body weight trend: ${wtTrend>0?'+':''}${wtTrend} lbs this week.`:null
   ].filter(Boolean).join('\n');
 
   try {
@@ -2331,10 +2537,10 @@ async function generateWeeklyReview() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 600,
         messages: [{
           role: 'user',
-          content: `You are George's personal wellness coach. Here is his data from the past 7 days:\n\n${context}\n\nWrite a direct, specific coaching review. Cover training performance, hydration, supplement adherence, and goal momentum. Be concrete with the numbers. Acknowledge what's working and give one clear focus for the coming week. Use second person. Keep it under 180 words. No fluff — talk like a real coach.`
+          content: `You are George's personal wellness coach. Here is his data from the past 7 days:\n\n${context}\n\nWrite a direct, specific coaching review for his Instagram-style feed. Cover training performance, hydration, supplement adherence, and goal momentum. Be concrete with the numbers. Acknowledge what's working and give one clear focus for the coming week. Use second person. Keep it under 150 words. No fluff — talk like a real coach who knows him personally.`
         }]
       })
     });
@@ -2344,7 +2550,15 @@ async function generateWeeklyReview() {
     }
     const data = await res.json();
     feedCards = feedCards.filter(c => c.category !== 'review');
-    feedCards.unshift({ id:Date.now(), category:'review', timestamp:new Date().toISOString(), body:data.content[0].text });
+    feedCards.unshift({
+      id: Date.now(),
+      category: 'review',
+      timestamp: new Date().toISOString(),
+      caption: data.content[0].text,
+      imageKeyword: IMG_KW.review,
+      liked: false,
+      bookmarked: false
+    });
     saveFeed();
     toast('Weekly review generated!');
   } catch(e) {
@@ -2674,8 +2888,12 @@ function initApp() {
     if(currentTab==='health') { drawWaterChart(); drawWeightChart(); }
   });
 
+  // Check smart feed triggers after local data is ready
+  setTimeout(checkFeedTriggers, 800);
+
   // Load from Supabase and set up realtime after local render
-  loadFromSupabase().then(() => {
+  loadFromSupabase().then(async () => {
+    await loadFeedFromSupabase();
     renderCurrentTab();
     renderTicker();
     setupRealtimeSync();
