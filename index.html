@@ -870,14 +870,13 @@ const KEY = 'wd3_v1';
 const FEED_KEY = 'wd3_feed_v1';
 const API_KEY_STORE = 'george_api_key';
 
-// Unsplash keyword map per feed category
-// NOTE: source.unsplash.com is used as specified — enable public access in your Supabase project
-const IMG_KW = {
-  water:  'water,hydration,drink',
-  gym:    'gym,workout,weights,fitness',
-  stack:  'supplements,vitamins,health',
-  goals:  'success,achievement,motivation',
-  review: 'planning,journal,analytics'
+// Curated Unsplash CDN photo URLs per feed category
+const IMG_URL = {
+  water:  'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=480&q=80',
+  gym:    'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=480&q=80',
+  stack:  'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=480&q=80',
+  goals:  'https://images.unsplash.com/photo-1552664730-d307ca884978?w=480&q=80',
+  review: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=480&q=80'
 };
 
 // ── SUPABASE: feed_posts table SQL (run in SQL Editor) ──
@@ -2200,14 +2199,12 @@ function hasFeedCardToday(category) {
   return feedCards.some(c => c.category === category && c.timestamp.slice(0,10) === todayKey());
 }
 
-function pushFeedCard(category, caption, imageKeyword) {
-  const kw = imageKeyword || IMG_KW[category] || 'health,fitness';
+function pushFeedCard(category, caption) {
   feedCards.unshift({
     id: Date.now(),
     category,
     timestamp: new Date().toISOString(),
     caption,
-    imageKeyword: kw,
     liked: false,
     bookmarked: false
   });
@@ -2356,10 +2353,7 @@ function formatFeedTime(iso) {
 
 function igPostHTML(c) {
   const caption = c.caption || c.body || '';
-  const kw = c.imageKeyword || IMG_KW[c.category] || 'health,fitness';
-  // Use the post ID as a cache-buster so each post gets a consistent but unique image
-  const sig = Math.abs(Math.floor(Number(c.id)) % 1000);
-  const imgSrc = `https://source.unsplash.com/480x300/?${kw}&sig=${sig}`;
+  const imgSrc = IMG_URL[c.category] || IMG_URL.goals;
   const isLong = caption.length > 130;
   const isReview = c.category === 'review';
   const catEmoji = {water:'💧',gym:'🏋️',stack:'💊',goals:'🎯',review:'📊'}[c.category] || '✦';
@@ -2557,7 +2551,6 @@ async function generateWeeklyReview() {
       category: 'review',
       timestamp: new Date().toISOString(),
       caption: data.content[0].text,
-      imageKeyword: IMG_KW.review,
       liked: false,
       bookmarked: false
     });
