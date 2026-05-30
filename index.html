@@ -921,7 +921,7 @@ function defaultState() {
       activityLevel:'moderate', activityHours:6, trainingDaysPerWeek:4,
       bottleSize:500, glassSize:250, caffeineMg:0, stimulants:'',
       gymType:'commercial', compoundInc:5, isolationInc:2.5,
-      wakeHour:7, bedHour:23 },
+      wakeHour:7, bedHour:23, apiKey:'' },
     goals: { today:[], tomorrow:[], streak:0, lastDoneDate:'' },
     water: { days:{} },
     stack: { supplements:[], days:{} },
@@ -1012,6 +1012,8 @@ async function loadFromSupabase() {
     if (!S.gym)           S.gym           = d.gym;
     if (!S.gym.workouts)  S.gym.workouts  = [];
     if (!S.gym.sessions)  S.gym.sessions  = [];
+    // Propagate API key from Supabase settings to localStorage so it works across devices
+    if (S.settings.apiKey) localStorage.setItem(API_KEY_STORE, S.settings.apiKey);
     localStorage.setItem(KEY, JSON.stringify(S));
     setSyncOnline(true);
   } catch(e) {
@@ -2588,7 +2590,7 @@ function renderProfile() {
   document.getElementById('prof_stimulants').value= s.stimulants || '';
   document.getElementById('prof_compInc').value   = s.compoundInc  || 5;
   document.getElementById('prof_isoInc').value    = s.isolationInc || 2.5;
-  document.getElementById('prof_apiKey').value    = localStorage.getItem(API_KEY_STORE) || '';
+  document.getElementById('prof_apiKey').value    = localStorage.getItem(API_KEY_STORE) || s.apiKey || '';
   document.getElementById('prof_waterTarget').textContent = calcWaterGoal().toLocaleString() + ' ml';
 
   document.querySelectorAll('#sexToggle .toggle-opt').forEach(el =>
@@ -2614,7 +2616,10 @@ function saveProfile() {
   s.isolationInc      = parseFloat(document.getElementById('prof_isoInc').value)   || 2.5;
 
   const apiKey = document.getElementById('prof_apiKey').value.trim();
-  if (apiKey) localStorage.setItem(API_KEY_STORE, apiKey);
+  if (apiKey) {
+    s.apiKey = apiKey;
+    localStorage.setItem(API_KEY_STORE, apiKey);
+  }
 
   S.gym.type = s.gymType || 'commercial';
   save();
