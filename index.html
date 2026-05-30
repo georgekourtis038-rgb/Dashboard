@@ -1046,15 +1046,71 @@ function setSyncOnline(online) {
 function setupRealtimeSync() {
   const userId = getUsername();
   if (!userId || !sb) return;
-  const tables = ['settings','goals','water_logs','workout_logs','supplement_logs','weight_logs'];
-  tables.forEach(table => {
-    sb.channel(`${table}_${userId}`)
-      .on('postgres_changes', { event:'UPDATE', schema:'public', table, filter:`user_id=eq.${userId}` },
-        async () => {
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ACTION REQUIRED IN SUPABASE DASHBOARD:
+  // Go to Database → Replication and enable replication for ALL 6 tables:
+  //   water_logs, workout_logs, supplement_logs, goals, weight_logs, settings
+  // Without this step, real-time events will not fire.
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const d = defaultState();
+
+  // Per-table handlers: apply payload.new.data into state, then refresh only
+  // the affected UI sections so the page never fully reloads.
+  const tableHandlers = {
+    water_logs: (newRow) => {
+      if (newRow && newRow.data) S.water = { ...d.water, ...newRow.data };
+      renderWater();
+      drawWaterChart();
+    },
+    workout_logs: (newRow) => {
+      if (newRow && newRow.data) {
+        S.gym = { ...d.gym, ...newRow.data };
+        if (!S.gym.workouts) S.gym.workouts = [];
+        if (!S.gym.sessions) S.gym.sessions = [];
+      }
+      renderPastWorkouts();
+      renderExerciseTrends();
+    },
+    supplement_logs: (newRow) => {
+      if (newRow && newRow.data) S.stack = { ...d.stack, ...newRow.data };
+      renderStack();
+    },
+    goals: (newRow) => {
+      if (newRow && newRow.data) S.goals = { ...d.goals, ...newRow.data };
+      renderGoals();
+    },
+    weight_logs: (newRow) => {
+      if (newRow && newRow.data) {
+        const remote = newRow.data;
+        if (Array.isArray(remote.weights)) S.weights = remote.weights;
+        if (remote.workoutDone) S.workoutDone = remote.workoutDone;
+      }
+      drawWeightChart();
+      updateComposition();
+      renderWeightHistory();
+    },
+    settings: (newRow) => {
+      if (newRow && newRow.data) S.settings = { ...d.settings, ...newRow.data };
+      renderProfile();
+      renderWater();
+    },
+  };
+
+  Object.entries(tableHandlers).forEach(([table, handler]) => {
+    sb.channel(`rt_${table}_${userId}`)
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table, filter: `user_id=eq.${userId}` },
+        (payload) => {
+          // Don't interrupt the user while they are actively typing
           if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-          await loadFromSupabase();
-          renderCurrentTab();
+          // payload.new is the full DB row: { user_id, data, updated_at }
+          handler(payload.new || {});
+          localStorage.setItem(KEY, JSON.stringify(S));
           renderTicker();
+          setSyncOnline(true);
+          toast('↕ Synced from another device');
         })
       .subscribe();
   });
