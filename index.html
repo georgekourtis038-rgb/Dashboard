@@ -1100,7 +1100,10 @@ function setupRealtimeSync() {
       renderWeightHistory();
     },
     settings: (newRow) => {
-      if (newRow && newRow.data) S.settings = { ...d.settings, ...newRow.data };
+      if (newRow && newRow.data) {
+        S.settings = { ...d.settings, ...newRow.data };
+        if (S.settings.apiKey) localStorage.setItem(API_KEY_STORE, S.settings.apiKey);
+      }
       renderProfile();
       renderWater();
     },
@@ -2615,7 +2618,12 @@ function saveProfile() {
   }
 
   S.gym.type = s.gymType || 'commercial';
-  save();
+  localStorage.setItem(KEY, JSON.stringify(S));
+
+  // Sync settings to Supabase immediately — do not rely on the debounce
+  // so the API key reaches the server before the user switches tabs
+  if (syncTimer) clearTimeout(syncTimer);
+  syncToSupabase().catch(console.warn);
 
   document.getElementById('prof_waterTarget').textContent = calcWaterGoal().toLocaleString() + ' ml';
   toast('Profile saved');
