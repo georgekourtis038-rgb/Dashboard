@@ -187,6 +187,20 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
 
 /* ── WEIGHT TRACKER ── */
 .weight-log-row{display:flex;gap:8px;margin-bottom:12px;}
+.wh-entry{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.wh-entry:last-child{border-bottom:none;}
+.wh-date{color:var(--t2);min-width:76px;font-size:12px;}
+.wh-val{font-weight:700;color:var(--t1);flex:1;}
+.wh-edit-btn{color:var(--t3);font-size:12px;padding:3px 7px;border-radius:5px;background:#1a1a1a;border:1px solid var(--border);transition:all 0.15s;line-height:1.4;cursor:pointer;}
+.wh-edit-btn:hover{color:var(--blue);border-color:rgba(79,142,247,0.3);}
+.wh-del-btn{color:var(--t3);font-size:17px;padding:1px 6px;transition:color 0.15s;line-height:1;cursor:pointer;}
+.wh-del-btn:hover{color:var(--red);}
+.wh-edit-row{display:flex;align-items:center;gap:6px;padding:9px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.wh-edit-row:last-child{border-bottom:none;}
+.wh-field{background:#1a1a1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--t1);}
+.wh-field:focus{border-color:rgba(79,142,247,0.5);}
+.wh-save-btn{background:rgba(79,142,247,0.15);border:1px solid rgba(79,142,247,0.3);border-radius:var(--radius-sm);padding:7px 12px;font-size:12px;font-weight:700;color:var(--blue);cursor:pointer;}
+.wh-cancel-btn{background:#1a1a1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 10px;font-size:12px;color:var(--t2);cursor:pointer;}
 .weight-input-main{flex:1;background:#1a1a1a;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:16px;font-weight:700;text-align:center;color:var(--t1);}
 .weight-input-main:focus{border-color:rgba(79,142,247,0.5);}
 .comp-bar-wrap{margin:10px 0;}
@@ -460,6 +474,55 @@ canvas{display:block;width:100%;height:100%;}
         </div>
       </div>
 
+      <!-- WEIGHT TRACKER -->
+      <div class="card">
+        <div class="section-label">Weight Tracker</div>
+        <div class="weight-log-row">
+          <input class="weight-input-main" type="number" id="bodyWeightInput" placeholder="Today's weight (lbs)" step="0.5" min="44" max="660">
+          <button class="add-btn" onclick="logBodyWeight()">Log</button>
+        </div>
+
+        <div class="chart-wrap" style="height:160px;"><canvas id="weightChart"></canvas></div>
+
+        <div style="margin-top:12px;">
+          <div class="section-label">Composition Estimate</div>
+          <div class="comp-bar-wrap">
+            <div class="comp-bar">
+              <div class="comp-muscle" id="compMuscle" style="width:50%"></div>
+              <div class="comp-fat" id="compFat" style="width:50%"></div>
+            </div>
+          </div>
+          <div class="comp-labels">
+            <span class="comp-muscle-lbl" id="compMuscleLbl">Muscle gain: —</span>
+            <span class="comp-fat-lbl" id="compFatLbl">Fat change: —</span>
+          </div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Estimate based on weight trend vs training volume delta.</div>
+        </div>
+
+        <!-- Progress Photos -->
+        <div style="margin-top:16px;">
+          <div class="section-label">Progress Photos (session only)</div>
+          <div class="photo-grid">
+            <div class="photo-slot" id="photo1Slot" onclick="document.getElementById('photo1In').click()">
+              <span class="photo-slot-icon">📷</span>
+              <span class="photo-slot-label">Before</span>
+              <input class="photo-input" type="file" id="photo1In" accept="image/*" onchange="loadPhoto(1,this)">
+            </div>
+            <div class="photo-slot" id="photo2Slot" onclick="document.getElementById('photo2In').click()">
+              <span class="photo-slot-icon">📷</span>
+              <span class="photo-slot-label">After</span>
+              <input class="photo-input" type="file" id="photo2In" accept="image/*" onchange="loadPhoto(2,this)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Log History -->
+        <div style="margin-top:16px;">
+          <div class="section-label">Log History</div>
+          <div id="weightHistoryList"></div>
+        </div>
+      </div>
+
       <!-- DAILY STACK -->
       <div class="card">
         <div class="row" style="margin-bottom:14px;">
@@ -555,49 +618,6 @@ canvas{display:block;width:100%;height:100%;}
       <div class="card">
         <div class="section-label">Exercise Trends</div>
         <div id="exerciseTrendsList"></div>
-      </div>
-
-      <!-- WEIGHT TRACKER -->
-      <div class="card">
-        <div class="section-label">Weight Tracker</div>
-        <div class="weight-log-row">
-          <input class="weight-input-main" type="number" id="bodyWeightInput" placeholder="Today's weight (lbs)" step="0.5" min="44" max="660">
-          <button class="add-btn" onclick="logBodyWeight()">Log</button>
-        </div>
-
-        <div class="chart-wrap" style="height:160px;"><canvas id="weightChart"></canvas></div>
-
-        <div style="margin-top:12px;">
-          <div class="section-label">Composition Estimate</div>
-          <div class="comp-bar-wrap">
-            <div class="comp-bar">
-              <div class="comp-muscle" id="compMuscle" style="width:50%"></div>
-              <div class="comp-fat" id="compFat" style="width:50%"></div>
-            </div>
-          </div>
-          <div class="comp-labels">
-            <span class="comp-muscle-lbl" id="compMuscleLbl">Muscle gain: —</span>
-            <span class="comp-fat-lbl" id="compFatLbl">Fat change: —</span>
-          </div>
-          <div style="font-size:11px;color:var(--t3);margin-top:4px;">Estimate based on weight trend vs training volume delta.</div>
-        </div>
-
-        <!-- Progress Photos -->
-        <div style="margin-top:16px;">
-          <div class="section-label">Progress Photos (session only)</div>
-          <div class="photo-grid">
-            <div class="photo-slot" id="photo1Slot" onclick="document.getElementById('photo1In').click()">
-              <span class="photo-slot-icon">📷</span>
-              <span class="photo-slot-label">Before</span>
-              <input class="photo-input" type="file" id="photo1In" accept="image/*" onchange="loadPhoto(1,this)">
-            </div>
-            <div class="photo-slot" id="photo2Slot" onclick="document.getElementById('photo2In').click()">
-              <span class="photo-slot-icon">📷</span>
-              <span class="photo-slot-label">After</span>
-              <input class="photo-input" type="file" id="photo2In" accept="image/*" onchange="loadPhoto(2,this)">
-            </div>
-          </div>
-        </div>
       </div>
 
     </div><!-- /gym -->
@@ -1684,11 +1704,8 @@ function logBodyWeight() {
   S.settings.weight = v;
   document.getElementById('bodyWeightInput').value='';
   save();
-  drawWeightChart(); updateComposition();
-  // Re-render water coach if health tab is active
-  if(document.getElementById('page-health').classList.contains('active')) {
-    renderWater();
-  }
+  drawWeightChart(); updateComposition(); renderWeightHistory();
+  renderWater();
   const newGoal = calcWaterGoal();
   toast(`Logged ${v} lbs · Water target → ${newGoal.toLocaleString()}ml`);
 }
@@ -1804,6 +1821,68 @@ function updateComposition() {
   document.getElementById('compFat').style.width=fatPct+'%';
   document.getElementById('compMuscleLbl').textContent=muscleLabel;
   document.getElementById('compFatLbl').textContent=fatLabel;
+}
+
+function renderWeightHistory() {
+  const list = document.getElementById('weightHistoryList');
+  if (!list) return;
+  if (!S.weights.length) {
+    list.innerHTML = '<div class="empty-state">No entries yet — log your first weight above</div>';
+    return;
+  }
+  const entries = [...S.weights].reverse();
+  list.innerHTML = entries.map((e, revIdx) => {
+    const idx = S.weights.length - 1 - revIdx;
+    const d = new Date(e.date + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('en', {month:'short', day:'numeric', year:'numeric'});
+    return `<div class="wh-entry" id="whe-${idx}">
+      <span class="wh-date">${dateStr}</span>
+      <span class="wh-val">${e.kg} lbs</span>
+      <button class="wh-edit-btn" onmousedown="event.preventDefault()" onclick="startEditWeight(${idx})" title="Edit">✏</button>
+      <button class="wh-del-btn" onclick="deleteWeightEntry(${idx})" title="Delete">×</button>
+    </div>`;
+  }).join('');
+}
+
+function startEditWeight(idx) {
+  const e = S.weights[idx];
+  if (!e) return;
+  const row = document.getElementById('whe-' + idx);
+  if (!row) return;
+  row.outerHTML = `<div class="wh-edit-row" id="whe-${idx}">
+    <input class="wh-field" type="date" id="whe-date-${idx}" value="${e.date}" style="width:130px;">
+    <input class="wh-field" type="number" id="whe-val-${idx}" value="${e.kg}" step="0.5" min="44" max="660" style="width:80px;">
+    <span style="font-size:12px;color:var(--t2);">lbs</span>
+    <button class="wh-save-btn" onclick="saveEditWeight(${idx})">Save</button>
+    <button class="wh-cancel-btn" onclick="renderWeightHistory()">Cancel</button>
+  </div>`;
+}
+
+function saveEditWeight(idx) {
+  const dateEl = document.getElementById('whe-date-' + idx);
+  const valEl  = document.getElementById('whe-val-'  + idx);
+  if (!dateEl || !valEl) return;
+  const newDate = dateEl.value;
+  const newVal  = parseFloat(valEl.value);
+  if (!newDate) { toast('Enter a valid date'); return; }
+  if (!newVal || newVal < 44 || newVal > 660) { toast('Enter a valid weight (44–660 lbs)'); return; }
+  S.weights[idx].date = newDate;
+  S.weights[idx].kg   = newVal;
+  save();
+  renderWeightHistory();
+  drawWeightChart();
+  updateComposition();
+  toast('Entry updated');
+}
+
+function deleteWeightEntry(idx) {
+  if (!confirm('Delete this weight entry?')) return;
+  S.weights.splice(idx, 1);
+  save();
+  renderWeightHistory();
+  drawWeightChart();
+  updateComposition();
+  toast('Entry deleted');
 }
 
 function loadPhoto(n, input) {
@@ -2249,8 +2328,8 @@ function switchTab(tab) {
   document.getElementById('nav-'+tab).classList.add('active');
   document.getElementById('content').scrollTop = 0;
 
-  if(tab==='health')  { renderWater(); renderStack(); }
-  if(tab==='gym')     { drawWeightChart(); updateComposition(); renderPastWorkouts(); renderExerciseTrends(); }
+  if(tab==='health')  { renderWater(); renderStack(); drawWeightChart(); updateComposition(); renderWeightHistory(); }
+  if(tab==='gym')     { renderPastWorkouts(); renderExerciseTrends(); }
   if(tab==='feed')    { renderFeed(); }
   if(tab==='profile') { renderProfile(); }
 }
@@ -2335,8 +2414,7 @@ function init() {
 
   // Redraw charts on resize
   window.addEventListener('resize',()=>{
-    if(currentTab==='health') { drawWaterChart(); }
-    if(currentTab==='gym') { drawWeightChart(); }
+    if(currentTab==='health') { drawWaterChart(); drawWeightChart(); }
   });
 }
 
